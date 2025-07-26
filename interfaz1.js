@@ -15,16 +15,24 @@ const INTERFAZ = {
     }
 };
 
-// ====== FUNCIONES PRINCIPALES ======
-
+// ====== FUNCIÓN DE ESCALADO MEJORADA ======
 function ajustarEscala() {
-    const scale = Math.min(
-        window.innerWidth / 135,
-        window.innerHeight / 240
-    );
+    const windowRatio = window.innerWidth / window.innerHeight;
+    const gameRatio = 135 / 240;
+    let scale;
+    
+    if (windowRatio > gameRatio) {
+        // Pantalla más ancha (landscape)
+        scale = window.innerHeight / 240;
+    } else {
+        // Pantalla más alta (portrait)
+        scale = window.innerWidth / 135;
+    }
+    
     INTERFAZ.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
+// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
 function configurarBotones() {
     // Botón volver
     INTERFAZ.elementos.botonVolver.addEventListener('click', () => {
@@ -61,6 +69,7 @@ function init() {
     ajustarEscala();
     configurarBotones();
     window.addEventListener('resize', ajustarEscala);
+    window.addEventListener('orientationchange', ajustarEscala);
 }
 
 document.addEventListener('DOMContentLoaded', init);
