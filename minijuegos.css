@@ -1,0 +1,100 @@
+﻿/* 🔧 Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: #000;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🎮 Canvas central y escalable */
+#minijuegos-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 135px;
+    height: 240px;
+    margin-top: -120px;
+    margin-left: -67.5px;
+    transform-origin: top left;
+    image-rendering: pixelated;
+    overflow: hidden;
+}
+
+/* 🧱 Fondo base fijo */
+.layer {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    top: 0;
+    left: 0;
+    background: url('fondo/pantalla/fondo.png') no-repeat;
+    background-size: cover;
+    z-index: 1;
+}
+
+/* 🎨 Interfaz gráfica */
+#interfaz-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 135px;
+    height: 240px;
+    z-index: 2;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+/* 🔘 Estilos comunes para botones */
+.boton-presionable {
+    cursor: pointer;
+    image-rendering: pixelated;
+    transition: transform 0.1s ease;
+    z-index: 3;
+}
+
+.boton-presionable:active {
+    transform: scale(0.85);
+}
+
+/* 🔘 Botón de salida */
+#boton-salir {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 16px;
+    right: 5px;
+}
+
+/* 🎲 Botones de juegos */
+.juego-btn {
+    position: absolute;
+    width: 32px;
+    height: 48px;
+    top: 44px;
+}
+
+#juego1 {
+    left: 21px;
+}
+
+#juego2 {
+    left: 52px;
+}
+
+/* 📱 Responsive */
+@media (max-width: 400px) {
+    #minijuegos-canvas {
+        transform: scale(0.9) !important;
+    }
+}

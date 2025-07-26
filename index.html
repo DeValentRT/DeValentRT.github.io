@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mascota Virtual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Capa de Pared -->
+        <div id="pared-layer" class="layer"></div>
+        
+        <!-- Capa de Suelo -->
+        <div id="suelo-layer" class="layer"></div>
+        
+        <!-- Capa del Gato -->
+        <div id="gato-container" class="layer">
+            <img id="gato-sprite" src="IdleSentado/animation_cat1.png" alt="Gato sentado">
+        </div>
+        
+        <!-- Capa de Stats (estática) -->
+        <div id="stats-layer"></div>
+        
+        <!-- Capa de Mochila (clickeable) -->
+        <div id="mochila-container"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

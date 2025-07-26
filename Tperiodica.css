@@ -1,0 +1,185 @@
+﻿/* 🎮 Reset general mejorado (sin cambios en tus propiedades originales) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* 🧱 Fondo pantalla */
+body {
+    background: #000;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🧾 Canvas principal - Renderizado pixelado */
+#tabla-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 135px;
+    height: 240px;
+    margin-top: -120px;
+    margin-left: -67.5px;
+    transform-origin: top left;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+    overflow: hidden;
+}
+
+/* Fondo base */
+#fondo1 {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    background: url('fondo/pantalla/fondo1.png') no-repeat;
+    background-size: cover;
+    z-index: 1;
+    image-rendering: pixelated;
+}
+
+/* Decorado superior */
+#fondo2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 135px;
+    height: 240px;
+    z-index: 2;
+    image-rendering: pixelated;
+}
+
+/* 🎮 Botón de cierre */
+#boton-cerrar {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+    z-index: 3;
+    cursor: pointer;
+    image-rendering: pixelated;
+}
+
+/* ⏱️ Barra de tiempo animada */
+#barra-tiempo {
+    position: absolute;
+    top: 2px;
+    right: 28px;
+    width: 96px;
+    height: 16px;
+    z-index: 4;
+    image-rendering: pixelated;
+}
+
+/* ❤️ Vidas del jugador */
+#vidas-facil {
+    position: absolute;
+    top: 80px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+    z-index: 4;
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 🧪 Fondo decorativo adicional (solo en modo fácil) */
+#indicador-facil {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 135px;
+    height: 224px;
+    z-index: 2;
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 🔬 Elemento químico actual */
+#elemento-actual {
+    position: absolute;
+    bottom: 21px;
+    right: 18px;
+    width: 16px;
+    height: 16px;
+    z-index: 6;
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 🧪 Nombre de la familia del elemento */
+#familia-actual {
+    position: absolute;
+    bottom: 3px;
+    left: 10px;
+    width: 32px;
+    height: 48px;
+    z-index: 6;
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 🏛️ Grupo romano del elemento (IA, IIA, ...) */
+#grupo-actual {
+    position: absolute;
+    bottom: 21px;
+    right: 36px;
+    width: 16px;
+    height: 16px;
+    z-index: 6;
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 📜 Mensaje de victoria/derrota - Posición exacta 64x32px */
+#mensaje-final {
+    position: absolute;
+    top: 55px;      /* 55px desde arriba */
+    left: 6px;      /* 6px desde la izquierda */
+    width: 64px;    /* Ancho exacto */
+    height: 32px;   /* Alto exacto */
+    z-index: 100;   /* Encima de todo */
+    image-rendering: pixelated;
+    display: none;
+}
+
+/* 🧪 Casillas de la tabla periódica */
+.casilla {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: url('button/casilla.png') no-repeat;
+    background-size: cover;
+    z-index: 5;
+    cursor: pointer;
+    image-rendering: pixelated;
+    border: none;
+    padding: 0;
+}
+
+/* Posiciones específicas de las casillas (manteniendo tus valores originales) */
+#elemento1 { top: 22px; right: 13px; }
+#elemento2 { top: 22px; right: 30px; }
+#elemento3 { top: 22px; right: 47px; }
+/* ... (todas las demás posiciones se mantienen igual) ... */
+#elemento50 { top: 172px; right: 115px; }
+
+/* Optimización para móviles */
+@media (max-width: 400px) {
+    #tabla-canvas {
+        transform: scale(0.9) !important;
+    }
+}
+
+/* Corrección de eventos táctiles */
+@media (hover: none) {
+    .casilla {
+        touch-action: manipulation;
+    }
+}

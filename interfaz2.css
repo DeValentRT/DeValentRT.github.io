@@ -1,0 +1,79 @@
+﻿/* Reset base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+body {
+    background: #000;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🎮 Canvas fijo */
+#interfaz2-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 135px;
+    height: 240px;
+    margin-top: -120px;
+    margin-left: -67.5px;
+    transform-origin: top left;
+    image-rendering: pixelated;
+    overflow: hidden;
+}
+
+/* Fondo base */
+#fondo-base {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    background: url('fondo/pantalla/fondo.png') no-repeat;
+    background-size: cover;
+    z-index: 1;
+}
+
+/* Interfaz decorativa */
+#interfaz-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 135px;
+    height: 240px;
+    z-index: 2;
+    image-rendering: pixelated;
+}
+
+/* Botones de dificultad */
+.boton-dificultad {
+    position: absolute;
+    width: 48px;
+    height: 16px;
+    z-index: 3;
+    image-rendering: pixelated;
+    cursor: pointer;
+}
+
+/* Posiciones */
+#dif1 { top: 55px; left: 45px; }
+#dif2 { top: 82px; left: 45px; }
+#dif3 { top: 109px; left: 45px; }
+
+/* Botón cerrar */
+#boton-cerrar {
+    position: absolute;
+    top: 18px;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+    z-index: 4;
+    cursor: pointer;
+    image-rendering: pixelated;
+}

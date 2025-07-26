@@ -1,0 +1,127 @@
+﻿/* 🔧 RESET MEJORADO PARA MÓVILES */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 🌐 ESTILOS BASE */
+body {
+    background: #000;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Pixel', Arial, sans-serif;
+}
+
+/* 🎮 CONTENEDOR PRINCIPAL */
+#celular-canvas {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    top: 50%;
+    left: 50%;
+    margin-top: -120px;
+    margin-left: -67.5px;
+    transform-origin: top left;
+    image-rendering: pixelated;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* 🖼️ CAPAS DE FONDO */
+.layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    pointer-events: none;
+}
+
+#fondo-base {
+    background: url('fondo/pantalla/fondo_color1.png') no-repeat;
+    z-index: 1;
+}
+
+#fondo-gato {
+    background: url('fondo/pantalla/fondo_gato1.png') no-repeat;
+    z-index: 2;
+}
+
+/* 📱 DECORACIÓN DEL CELULAR */
+#imagen-cel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* 📦 CONTENEDOR DE APLICACIONES */
+#app-buttons {
+    position: absolute;
+    top: 26px;
+    left: 18px;
+    z-index: 4;
+}
+
+/* 🎯 ESTILOS DE BOTONES */
+.app-icon {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 16px;
+    display: block;
+    cursor: pointer;
+    image-rendering: pixelated;
+    border-radius: 4px;
+    transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 1.5);
+}
+
+/* 🎨 COLORES INDIVIDUALES PARA CADA APP */
+#app1 { background-color: #9c27b0; } /* Morado */
+#app2 { background-color: #9e9e9e; } /* Gris */
+#app3 { background-color: #ff9800; } /* Naranja */
+#app4 { background-color: #4caf50; } /* Verde */
+#app5 { background-color: #e91e63; } /* Rosa */
+
+/* 🔙 BOTÓN BACK - POSICIÓN ORIGINAL */
+#boton-back {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 50%;
+    bottom: 11px;
+    transform: translateX(-50%);
+    z-index: 4;
+    cursor: pointer;
+    image-rendering: pixelated;
+    transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 1.5);
+}
+
+/* ✨ ANIMACIÓN UNIFICADA PARA TODOS LOS BOTONES */
+.app-icon:active,
+#boton-back:active {
+    transform: scale(0.88) !important;
+    transform-origin: center;
+    filter: brightness(1.8) drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+    opacity: 0.9;
+}
+
+/* 🎯 MANTIENE POSICIÓN CENTRADA DURANTE ANIMACIÓN */
+#boton-back:active {
+    transform: translateX(-50%) scale(0.88) !important;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 400px) {
+    #celular-canvas {
+        transform: scale(0.9) !important;
+    }
+}

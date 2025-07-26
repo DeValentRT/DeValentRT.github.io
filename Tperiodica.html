@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabla Periódica</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="Tperiodica.css">
+    <style>
+        /* Estilos adicionales para garantizar calidad de imagen */
+        #tabla-canvas,
+        #fondo1,
+        #fondo2,
+        #boton-cerrar,
+        #barra-tiempo,
+        #vidas-facil,
+        #elemento-actual,
+        #familia-actual,
+        #grupo-actual,
+        #mensaje-final,
+        .casilla {
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+        
+        /* Posición exacta para mensajes finales */
+        #mensaje-final {
+            top: 55px;
+            left: 6px;
+            width: 64px;
+            height: 32px;
+            z-index: 100;
+            transform: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="tabla-canvas">
+
+        <!-- 🧱 Fondo principal -->
+        <div id="fondo1"></div>
+
+        <!-- 🧩 Decorado superior -->
+        <img id="fondo2" src="fondo/pantalla/fondo2.png" alt="Decorado fondo">
+
+        <!-- 🎮 Botón de cierre -->
+        <img id="boton-cerrar" src="sprites/button/button_3.png" alt="Cerrar">
+
+        <!-- ⏱️ Barra de tiempo animada -->
+        <img id="barra-tiempo" src="time/time1.png" alt="Tiempo">
+
+        <!-- ❤️ Vidas del jugador -->
+        <img id="vidas-facil" src="lives/3.png" alt="Vidas" style="display:none;">
+
+        <!-- 🧪 Fondo decorativo adicional (solo en modo fácil) -->
+        <img id="indicador-facil" src="fondo/pantalla/fondo3.png" alt="Modo fácil" style="display:none;">
+
+        <!-- 🔬 Elemento químico actual -->
+        <img id="elemento-actual" src="" alt="Elemento mostrado" style="display:none;">
+
+        <!-- 🧪 Nombre de la familia del elemento -->
+        <img id="familia-actual" src="" alt="Familia del elemento" style="display:none;">
+
+        <!-- 🏛️ Grupo romano del elemento (IA, IIA, ...) -->
+        <img id="grupo-actual" src="" alt="Grupo del elemento" style="display:none;">
+
+        <!-- 📜 Mensaje de victoria o derrota (64x32px en posición exacta) -->
+        <img id="mensaje-final" src="" alt="Mensaje final" style="display:none;">
+
+        <!-- Casillas del 1 al 50 -->
+        <!-- Fila 1 — Hidrógeno y Alcalinos -->
+        <button id="elemento1" class="casilla" style="top:22px; right:13px;"></button>
+        <button id="elemento2" class="casilla" style="top:22px; right:30px;"></button>
+        <button id="elemento3" class="casilla" style="top:22px; right:47px;"></button>
+        <button id="elemento4" class="casilla" style="top:22px; right:64px;"></button>
+        <button id="elemento5" class="casilla" style="top:22px; right:81px;"></button>
+        <button id="elemento6" class="casilla" style="top:22px; right:98px;"></button>
+        <button id="elemento7" class="casilla" style="top:22px; right:115px;"></button>
+
+        <!-- Fila 2 — Alcalinotérreos -->
+        <button id="elemento8" class="casilla" style="top:39px; right:30px;"></button>
+        <button id="elemento9" class="casilla" style="top:39px; right:47px;"></button>
+        <button id="elemento10" class="casilla" style="top:39px; right:64px;"></button>
+        <button id="elemento11" class="casilla" style="top:39px; right:81px;"></button>
+        <button id="elemento12" class="casilla" style="top:39px; right:98px;"></button>
+        <button id="elemento13" class="casilla" style="top:39px; right:115px;"></button>
+
+        <!-- Fila 3 — Boroides -->
+        <button id="elemento14" class="casilla" style="top:87px; right:30px;"></button>
+        <button id="elemento15" class="casilla" style="top:87px; right:47px;"></button>
+        <button id="elemento16" class="casilla" style="top:87px; right:64px;"></button>
+        <button id="elemento17" class="casilla" style="top:87px; right:81px;"></button>
+        <button id="elemento18" class="casilla" style="top:87px; right:98px;"></button>
+        <button id="elemento19" class="casilla" style="top:87px; right:115px;"></button>
+
+        <!-- Fila 4 — Carbonoides -->
+        <button id="elemento20" class="casilla" style="top:104px; right:30px;"></button>
+        <button id="elemento21" class="casilla" style="top:104px; right:47px;"></button>
+        <button id="elemento22" class="casilla" style="top:104px; right:64px;"></button>
+        <button id="elemento23" class="casilla" style="top:104px; right:81px;"></button>
+        <button id="elemento24" class="casilla" style="top:104px; right:98px;"></button>
+        <button id="elemento25" class="casilla" style="top:104px; right:115px;"></button>
+
+        <!-- Fila 5 — Nitrogenoides -->
+        <button id="elemento26" class="casilla" style="top:121px; right:30px;"></button>
+        <button id="elemento27" class="casilla" style="top:121px; right:47px;"></button>
+        <button id="elemento28" class="casilla" style="top:121px; right:64px;"></button>
+        <button id="elemento29" class="casilla" style="top:121px; right:81px;"></button>
+        <button id="elemento30" class="casilla" style="top:121px; right:98px;"></button>
+        <button id="elemento31" class="casilla" style="top:121px; right:115px;"></button>
+
+        <!-- Fila 6 — Calcógenos -->
+        <button id="elemento32" class="casilla" style="top:138px; right:30px;"></button>
+        <button id="elemento33" class="casilla" style="top:138px; right:47px;"></button>
+        <button id="elemento34" class="casilla" style="top:138px; right:64px;"></button>
+        <button id="elemento35" class="casilla" style="top:138px; right:81px;"></button>
+        <button id="elemento36" class="casilla" style="top:138px; right:98px;"></button>
+        <button id="elemento37" class="casilla" style="top:138px; right:115px;"></button>
+
+        <!-- Fila 7 — Halógenos -->
+        <button id="elemento38" class="casilla" style="top:155px; right:30px;"></button>
+        <button id="elemento39" class="casilla" style="top:155px; right:47px;"></button>
+        <button id="elemento40" class="casilla" style="top:155px; right:64px;"></button>
+        <button id="elemento41" class="casilla" style="top:155px; right:81px;"></button>
+        <button id="elemento42" class="casilla" style="top:155px; right:98px;"></button>
+        <button id="elemento43" class="casilla" style="top:155px; right:115px;"></button>
+
+        <!-- Fila 8 — Gases nobles -->
+        <button id="elemento44" class="casilla" style="top:172px; right:13px;"></button>
+        <button id="elemento45" class="casilla" style="top:172px; right:30px;"></button>
+        <button id="elemento46" class="casilla" style="top:172px; right:47px;"></button>
+        <button id="elemento47" class="casilla" style="top:172px; right:64px;"></button>
+        <button id="elemento48" class="casilla" style="top:172px; right:81px;"></button>
+        <button id="elemento49" class="casilla" style="top:172px; right:98px;"></button>
+        <button id="elemento50" class="casilla" style="top:172px; right:115px;"></button>
+
+    </div>
+
+    <!-- 🧠 Script de lógica principal -->
+    <script src="Tperiodica.js"></script>
+</body>
+</html>

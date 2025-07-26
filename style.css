@@ -1,0 +1,188 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    position: relative;
+    width: 135px;
+    height: 240px;
+    overflow: hidden;
+    image-rendering: pixelated;
+    transform-origin: top left;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -120px;
+    margin-left: -67.5px;
+}
+
+.layer {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    top: 0;
+    left: 0;
+    will-change: transform;
+}
+
+#pared-layer {
+    background: url('fondo/pared/tiles_map1.png') no-repeat;
+    z-index: 1;
+}
+
+#suelo-layer {
+    background: url('fondo/suelo/tiles_map1.png') no-repeat;
+    z-index: 2;
+    top: auto;
+    bottom: 0;
+}
+
+#gato-container {
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+}
+
+#gato-sprite {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    position: absolute;
+    bottom: 40px; /* Aumentado de 30px a 40px */
+    left: 85px; /* Centrado en el área total (240px/2 - 64px/2) */
+}
+/* Capa Stats (estática) */
+#stats-layer {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    background: url('fondo/stats/stats.png') no-repeat;
+    z-index: 4; /* Entre gato y mochila */
+    pointer-events: none; /* No interactuable */
+}
+
+/* Capa Mochila (clickeable) */
+#mochila-container {
+    position: absolute;
+    z-index: 5; /* Capa superior */
+    width: 32px;
+    height: 48px;
+    background: url('fondo/stats/mochila.png') no-repeat;
+    right: 12px; /* Posición ajustable */
+    bottom: 5px; /* Posición ajustable */
+    cursor: pointer;
+}
+
+#mochila-container:active {
+    transform: scale(0.95);
+}/* 🔧 Reset general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🎮 Canvas principal */
+#game-container {
+    position: relative;
+    width: 135px;
+    height: 240px;
+    overflow: hidden;
+    image-rendering: pixelated;
+    transform-origin: top left;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -120px;
+    margin-left: -67.5px;
+}
+
+/* 🧱 Capas scrollables */
+.layer {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    top: 0;
+    left: 0;
+    will-change: transform;
+}
+
+#pared-layer {
+    background: url('fondo/pared/tiles_map1.png') no-repeat;
+    z-index: 1;
+}
+
+#suelo-layer {
+    background: url('fondo/suelo/tiles_map1.png') no-repeat;
+    z-index: 2;
+    top: auto;
+    bottom: 0;
+}
+
+/* 🐱 Gato */
+#gato-container {
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+}
+
+#gato-sprite {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    position: absolute;
+    bottom: 40px;
+    left: 85px;
+}
+
+/* 🧪 Capa de stats (estática) */
+#stats-layer {
+    position: absolute;
+    width: 135px;
+    height: 240px;
+    background: url('fondo/stats/stats.png') no-repeat;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* 🎒 Mochila */
+#mochila-container {
+    position: absolute;
+    z-index: 5;
+    width: 32px;
+    height: 48px;
+    background: url('fondo/stats/mochila.png') no-repeat;
+    right: 12px;
+    bottom: 5px;
+    cursor: pointer;
+}
+
+/* ✅ Animación desactivada (removido)
+#mochila-container:active {
+    transform: scale(0.95);
+}
+*/
