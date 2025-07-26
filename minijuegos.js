@@ -1,67 +1,62 @@
-﻿// ====== CONFIGURACIÓN ======
-const MINIJUEGOS = {
+// ====== CONFIGURACIÓN ======
+const MOCHILA = {
     elementos: {
-        canvas: document.getElementById('minijuegos-canvas'),
-        botonSalir: document.getElementById('boton-salir'),
-        juegos: {
-            juego1: document.getElementById('juego1'),
-            juego2: document.getElementById('juego2')
-        }
+        canvas: document.getElementById('mochila-canvas'),
+        botonCerrar: document.getElementById('boton-superior'),
+        botonCelular: document.getElementById('boton-lateral')
     },
-    rutas: {
-        juego1: 'interfaz1.html',
-        juego2: 'interfaz2.html'
+    animacion: {
+        duracion: 150 // ms
     }
 };
 
-// ====== FUNCIONES PRINCIPALES ======
-
+// ====== FUNCIÓN DE ESCALADO MEJORADA ======
 function ajustarEscala() {
-    const scale = Math.min(
-        window.innerWidth / 135,
-        window.innerHeight / 240
-    );
-    MINIJUEGOS.elementos.canvas.style.transform = `scale(${scale})`;
+    const windowRatio = window.innerWidth / window.innerHeight;
+    const gameRatio = 135 / 240;
+    let scale;
+    
+    if (windowRatio > gameRatio) {
+        // Pantalla más ancha (landscape)
+        scale = window.innerHeight / 240;
+    } else {
+        // Pantalla más alta (portrait)
+        scale = window.innerWidth / 135;
+    }
+    
+    MOCHILA.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-function configurarBotones() {
-    // Botón de salida
-    MINIJUEGOS.elementos.botonSalir.addEventListener('click', () => {
-        window.location.href = 'celular.html';
+// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
+function manejarBotonCelular() {
+    const { botonCelular } = MOCHILA.elementos;
+    
+    botonCelular.addEventListener('click', () => {
+        setTimeout(() => {
+            window.location.href = 'celular.html';
+        }, MOCHILA.animacion.duracion);
     });
+    
+    botonCelular.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+}
 
-    // Botones de juegos
-    Object.keys(MINIJUEGOS.elementos.juegos).forEach(juegoId => {
-        MINIJUEGOS.elementos.juegos[juegoId].addEventListener('click', () => {
-            if (MINIJUEGOS.rutas[juegoId]) {
-                window.location.href = MINIJUEGOS.rutas[juegoId];
-            }
-        });
-    });
-
-    // Eventos táctiles para móviles
-    document.querySelectorAll('.boton-presionable').forEach(boton => {
-        boton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            boton.style.transform = 'scale(0.85)';
-        }, { passive: false });
-
-        boton.addEventListener('touchend', () => {
-            boton.style.transform = 'scale(1)';
-        });
+function manejarBotonCerrar() {
+    const { botonCerrar } = MOCHILA.elementos;
+    
+    botonCerrar.addEventListener('click', () => {
+        window.location.href = 'index.html';
     });
 }
 
 // ====== INICIALIZACIÓN ======
 function init() {
-    // Añadir clase común a todos los botones
-    document.querySelectorAll('#boton-salir, .juego-btn').forEach(boton => {
-        boton.classList.add('boton-presionable');
-    });
-
     ajustarEscala();
-    configurarBotones();
+    manejarBotonCelular();
+    manejarBotonCerrar();
     window.addEventListener('resize', ajustarEscala);
+    window.addEventListener('orientationchange', ajustarEscala);
 }
 
 document.addEventListener('DOMContentLoaded', init);
