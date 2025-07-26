@@ -1,4 +1,4 @@
-﻿/* 🔧 RESET MEJORADO PARA MÓVILES */
+/* 🔧 RESET MEJORADO PARA MÓVILES */
 * {
     margin: 0;
     padding: 0;
@@ -19,16 +19,12 @@ body {
     font-family: 'Pixel', Arial, sans-serif;
 }
 
-/* 🎮 CONTENEDOR PRINCIPAL */
+/* 🎮 CONTENEDOR PRINCIPAL - AHORA RESPONSIVE */
 #celular-canvas {
-    position: absolute;
+    position: relative;
     width: 135px;
     height: 240px;
-    top: 50%;
-    left: 50%;
-    margin-top: -120px;
-    margin-left: -67.5px;
-    transform-origin: top left;
+    transform-origin: center center;
     image-rendering: pixelated;
     overflow: hidden;
     z-index: 1;
@@ -117,11 +113,4 @@ body {
 /* 🎯 MANTIENE POSICIÓN CENTRADA DURANTE ANIMACIÓN */
 #boton-back:active {
     transform: translateX(-50%) scale(0.88) !important;
-}
-
-/* 📱 RESPONSIVE */
-@media (max-width: 400px) {
-    #celular-canvas {
-        transform: scale(0.9) !important;
-    }
 }
