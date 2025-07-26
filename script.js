@@ -5,21 +5,18 @@ const gatoContainer = document.getElementById('gato-container');
 const gatoSprite = document.getElementById('gato-sprite');
 const mochilaContainer = document.getElementById('mochila-container');
 
-// Configuración de desplazamiento
+// Configuración de desplazamiento (MANTIENE LA LÓGICA ORIGINAL)
 let startX = 0;
-let currentX = -52.5; // Desplazamiento inicial (240-135)/2
+let currentX = -52.5;
 const maxScroll = -(240 - 135);
 
-// Animación
+// Animación (MANTIENE LA LÓGICA ORIGINAL)
 let frameActual = 0;
 const totalFrames = 8;
 const fps = 4;
 let animacionInterval;
 
-// Compensación para centrar el gato (diferencia entre el fondo y el área visible)
-const compensacionCentrado = 52.5; // (240 - 135) / 2
-
-// ===== ANIMACIÓN DEL GATO =====
+// ===== ANIMACIÓN DEL GATO (MANTIENE LA LÓGICA ORIGINAL) =====
 function iniciarAnimacion() {
     if (animacionInterval) clearInterval(animacionInterval);
     animacionInterval = setInterval(() => {
@@ -28,7 +25,7 @@ function iniciarAnimacion() {
     }, 1000 / fps);
 }
 
-// ===== INTERACCIÓN MOCHILA =====
+// ===== INTERACCIÓN MOCHILA (MANTIENE LA LÓGICA ORIGINAL) =====
 function configurarMochila() {
     mochilaContainer.addEventListener('click', manejarClickMochila);
     mochilaContainer.addEventListener('touchstart', manejarClickMochila, { passive: true });
@@ -39,7 +36,7 @@ function manejarClickMochila(e) {
     window.location.href = 'mochila.html';
 }
 
-// ===== DESPLAZAMIENTO =====
+// ===== DESPLAZAMIENTO (MANTIENE LA LÓGICA ORIGINAL) =====
 function manejarInicio(e) {
     startX = e.clientX || e.touches[0].clientX;
     e.preventDefault();
@@ -54,10 +51,7 @@ function manejarMovimiento(e) {
 
     paredLayer.style.transform = `translateX(${newX}px)`;
     sueloLayer.style.transform = `translateX(${newX}px)`;
-    
-    // Aplicamos la compensación para mantener el gato centrado
-    gatoContainer.style.transform = `translateX(${newX + compensacionCentrado}px)`;
-    
+    gatoContainer.style.transform = `translateX(${newX}px)`;
     e.preventDefault();
 }
 
@@ -66,7 +60,7 @@ function manejarFin() {
     startX = 0;
 }
 
-// ===== INICIALIZACIÓN =====
+// ===== INICIALIZACIÓN (MANTIENE LA LÓGICA ORIGINAL) =====
 function init() {
     document.addEventListener('touchstart', manejarInicio, { passive: false });
     document.addEventListener('touchmove', manejarMovimiento, { passive: false });
@@ -78,21 +72,9 @@ function init() {
     iniciarAnimacion();
     configurarMochila();
 
-    // Posición inicial con compensación para el gato
     paredLayer.style.transform = `translateX(${currentX}px)`;
     sueloLayer.style.transform = `translateX(${currentX}px)`;
-    gatoContainer.style.transform = `translateX(${currentX + compensacionCentrado}px)`;
-
-    function ajustarEscala() {
-        const scale = Math.min(
-            window.innerWidth / 135,
-            window.innerHeight / 240
-        );
-        document.getElementById('game-container').style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener('resize', ajustarEscala);
-    ajustarEscala();
+    gatoContainer.style.transform = `translateX(${currentX}px)`;
 }
 
 document.addEventListener('DOMContentLoaded', init);
