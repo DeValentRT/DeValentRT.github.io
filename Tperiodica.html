@@ -1,72 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tabla Periódica</title>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="Tperiodica.css">
-    <style>
-        /* Estilos adicionales para garantizar calidad de imagen */
-        #tabla-canvas,
-        #fondo1,
-        #fondo2,
-        #boton-cerrar,
-        #barra-tiempo,
-        #vidas-facil,
-        #elemento-actual,
-        #familia-actual,
-        #grupo-actual,
-        #mensaje-final,
-        .casilla {
-            image-rendering: pixelated;
-            -ms-interpolation-mode: nearest-neighbor;
-        }
-        
-        /* Posición exacta para mensajes finales */
-        #mensaje-final {
-            top: 55px;
-            left: 6px;
-            width: 64px;
-            height: 32px;
-            z-index: 100;
-            transform: none !important;
-        }
-    </style>
 </head>
 <body>
     <div id="tabla-canvas">
-
-        <!-- 🧱 Fondo principal -->
+        <!-- Fondo principal -->
         <div id="fondo1"></div>
-
-        <!-- 🧩 Decorado superior -->
+        
+        <!-- Decorado superior -->
         <img id="fondo2" src="fondo/pantalla/fondo2.png" alt="Decorado fondo">
-
-        <!-- 🎮 Botón de cierre -->
+        
+        <!-- Botón de cierre -->
         <img id="boton-cerrar" src="sprites/button/button_3.png" alt="Cerrar">
-
-        <!-- ⏱️ Barra de tiempo animada -->
+        
+        <!-- Barra de tiempo -->
         <img id="barra-tiempo" src="time/time1.png" alt="Tiempo">
-
-        <!-- ❤️ Vidas del jugador -->
+        
+        <!-- Vidas del jugador -->
         <img id="vidas-facil" src="lives/3.png" alt="Vidas" style="display:none;">
-
-        <!-- 🧪 Fondo decorativo adicional (solo en modo fácil) -->
+        
+        <!-- Fondo decorativo adicional (solo en modo fácil) -->
         <img id="indicador-facil" src="fondo/pantalla/fondo3.png" alt="Modo fácil" style="display:none;">
-
-        <!-- 🔬 Elemento químico actual -->
+        
+        <!-- Elemento químico actual -->
         <img id="elemento-actual" src="" alt="Elemento mostrado" style="display:none;">
-
-        <!-- 🧪 Nombre de la familia del elemento -->
+        
+        <!-- Familia del elemento -->
         <img id="familia-actual" src="" alt="Familia del elemento" style="display:none;">
-
-        <!-- 🏛️ Grupo romano del elemento (IA, IIA, ...) -->
+        
+        <!-- Grupo romano del elemento -->
         <img id="grupo-actual" src="" alt="Grupo del elemento" style="display:none;">
-
-        <!-- 📜 Mensaje de victoria o derrota (64x32px en posición exacta) -->
+        
+        <!-- Mensaje final -->
         <img id="mensaje-final" src="" alt="Mensaje final" style="display:none;">
-
+        
         <!-- Casillas del 1 al 50 -->
         <!-- Fila 1 — Hidrógeno y Alcalinos -->
         <button id="elemento1" class="casilla" style="top:22px; right:13px;"></button>
@@ -133,10 +104,7 @@
         <button id="elemento48" class="casilla" style="top:172px; right:81px;"></button>
         <button id="elemento49" class="casilla" style="top:172px; right:98px;"></button>
         <button id="elemento50" class="casilla" style="top:172px; right:115px;"></button>
-
     </div>
-
-    <!-- 🧠 Script de lógica principal -->
     <script src="Tperiodica.js"></script>
 </body>
 </html>
