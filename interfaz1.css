@@ -1,4 +1,4 @@
-﻿/* 🔧 Reset base */
+/* 🔧 Reset mejorado */
 * {
     margin: 0;
     padding: 0;
@@ -17,16 +17,12 @@ body {
     overflow: hidden;
 }
 
-/* 🎮 Canvas adaptativo */
+/* 🎮 Canvas principal - Responsive */
 #interfaz-canvas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: relative;
     width: 135px;
     height: 240px;
-    margin-top: -120px;
-    margin-left: -67.5px;
-    transform-origin: top left;
+    transform-origin: center center;
     image-rendering: pixelated;
     overflow: hidden;
 }
@@ -34,8 +30,8 @@ body {
 /* 🧱 Fondo base */
 #fondo-base {
     position: absolute;
-    width: 135px;
-    height: 240px;
+    width: 100%;
+    height: 100%;
     background: url('fondo/pantalla/fondo.png') no-repeat;
     background-size: cover;
     z-index: 1;
@@ -44,16 +40,14 @@ body {
 /* 🎨 Interfaz principal */
 #interfaz-img {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 135px;
-    height: 240px;
+    width: 100%;
+    height: 100%;
     z-index: 2;
     image-rendering: pixelated;
     pointer-events: none;
 }
 
-/* 🧪 Estilos comunes para botones */
+/* 🧪 Estilos para botones */
 .boton-presionable {
     cursor: pointer;
     image-rendering: pixelated;
@@ -89,11 +83,4 @@ body {
     height: 16px;
     top: 18px;
     right: 6px;
-}
-
-/* 📱 Responsive */
-@media (max-width: 400px) {
-    #interfaz-canvas {
-        transform: scale(0.9) !important;
-    }
 }
