@@ -1,285 +1,273 @@
-﻿// 📐 Escalado automático del canvas
+﻿// ====== CONFIGURACIÓN ======
+const MICHI = {
+    elementos: {
+        canvas: document.getElementById('michi-canvas'),
+        botonCerrar: document.getElementById('boton-cerrar'),
+        casillas: Array.from({ length: 9 }, (_, i) => document.getElementById(`casilla${i}`))
+    },
+    rutas: {
+        cerrar: 'minijuegos.html',
+        fichas: {
+            X: 'button/x.png',
+            O: 'button/o.png'
+        },
+        victorias: Array.from({ length: 8 }, (_, i) => `michi_win/win${i+1}.png`),
+        reaccionesIA: Array.from({ length: 7 }, (_, i) => `stickers/reaction${i+1}.png`)
+    }
+};
+
+// ====== FUNCIÓN DE ESCALADO MEJORADA ======
 function ajustarEscala() {
-    const scale = Math.min(window.innerWidth / 135, window.innerHeight / 240);
-    document.getElementById('michi-canvas').style.transform = `scale(${scale})`;
+    const windowRatio = window.innerWidth / window.innerHeight;
+    const gameRatio = 135 / 240;
+    let scale;
+    
+    if (windowRatio > gameRatio) {
+        // Pantalla más ancha (landscape)
+        scale = window.innerHeight / 240;
+    } else {
+        // Pantalla más alta (portrait)
+        scale = window.innerWidth / 135;
+    }
+    
+    MICHI.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-// 🔗 Obtener modo de juego desde la URL
+// ====== FUNCIONES DEL JUEGO ======
 function obtenerModoJuego() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('modo'); // 'local' o 'ia'
+    return params.get('modo') || 'local';
 }
 
-// 🔙 Botón para regresar a minijuegos
 function configurarBotonCerrar() {
-    const cerrar = document.getElementById('boton-cerrar');
-    cerrar.addEventListener('click', () => {
-        window.location.href = 'minijuegos.html';
+    MICHI.elementos.botonCerrar.addEventListener('click', () => {
+        window.location.href = MICHI.rutas.cerrar;
     });
-    cerrar.addEventListener('touchstart', e => {
-        e.stopPropagation();
-        window.location.href = 'minijuegos.html';
-    }, { passive: true });
+    
+    MICHI.elementos.botonCerrar.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+    }, { passive: false });
 }
 
-// 👁️ Indicador visual del modo IA
 function mostrarIndicadorIA() {
-    const iaImg = document.createElement('img');
-    iaImg.src = 'button/ia.png';
-    iaImg.alt = 'Modo IA';
-    Object.assign(iaImg.style, {
-        position: 'absolute',
-        top: '10px',
-        left: '10px',
-        width: '32px',
-        height: '32px',
-        zIndex: '9',
-        imageRendering: 'pixelated'
-    });
-    iaImg.id = 'indicador-ia';
-    document.getElementById('michi-canvas').appendChild(iaImg);
+    const indicador = document.createElement('img');
+    indicador.src = 'button/ia.png';
+    indicador.alt = 'Modo IA';
+    indicador.id = 'indicador-ia';
+    MICHI.elementos.canvas.appendChild(indicador);
 }
 
-// 🎭 Reacción visual de la IA tras jugada del jugador
 function mostrarReaccionIA() {
-    const index = Math.floor(Math.random() * 7) + 1;
+    const randomIndex = Math.floor(Math.random() * MICHI.rutas.reaccionesIA.length);
     const reaccion = document.createElement('img');
-    reaccion.src = `stickers/reaction${index}.png`;
+    reaccion.src = MICHI.rutas.reaccionesIA[randomIndex];
     reaccion.alt = 'Reacción IA';
-    Object.assign(reaccion.style, {
-        position: 'absolute',
-        top: '10px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '32px',
-        height: '32px',
-        zIndex: '8',
-        imageRendering: 'pixelated'
-    });
     reaccion.id = 'ia-reaccion';
-    document.getElementById('michi-canvas').appendChild(reaccion);
+    MICHI.elementos.canvas.appendChild(reaccion);
 
     setTimeout(() => {
-        const r = document.getElementById('ia-reaccion');
-        if (r) r.remove();
+        const elemento = document.getElementById('ia-reaccion');
+        if (elemento) elemento.remove();
     }, 3000);
 }
 
-// 🧱 Combinaciones ganadoras
-function obtenerCombinaciones() {
+function obtenerCombinacionesGanadoras() {
     return [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [2, 4, 6], [0, 4, 8]
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontales
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Verticales
+        [0, 4, 8], [2, 4, 6]             // Diagonales
     ];
 }
 
-// 🎮 Modo multijugador local
-function activarMultijugadorLocal() {
-    let turno = 'X';
-    let tablero = Array(9).fill('');
-    let bloqueado = false;
-    const combinaciones = obtenerCombinaciones();
-
-    for (let i = 0; i < 9; i++) {
-        const casilla = document.getElementById(`casilla${i}`);
-        const marcar = () => {
-            if (bloqueado || tablero[i] !== '') return;
-            
-            // Aplicar animación
-            casilla.style.transform = 'scale(0.85)';
-            setTimeout(() => {
-                casilla.style.transform = 'scale(1)';
-                colocarFicha(i, turno, casilla);
-                tablero[i] = turno;
-
-                const resultado = verificarGanador(tablero, combinaciones);
-                if (resultado) {
-                    mostrarWin(resultado.index + 1);
-                    bloqueado = true;
-                    setTimeout(() => reiniciarJuego('local'), 4000);
-                } else if (tablero.every(c => c !== '')) {
-                    bloqueado = true;
-                    setTimeout(() => reiniciarJuego('local'), 4000);
-                } else {
-                    turno = turno === 'X' ? 'O' : 'X';
-                }
-            }, 100);
-        };
-        
-        casilla.addEventListener('click', marcar);
-        casilla.addEventListener('touchstart', e => {
-            e.preventDefault();
-            casilla.style.transform = 'scale(0.85)';
-        }, { passive: false });
-        
-        casilla.addEventListener('touchend', () => {
-            casilla.style.transform = 'scale(1)';
-            marcar();
-        });
-    }
-}
-
-// 🤖 Modo contra IA
-function activarModoIA() {
-    mostrarIndicadorIA();
-    let turno = 'X';
-    let tablero = Array(9).fill('');
-    let bloqueado = false;
-    const combinaciones = obtenerCombinaciones();
-
-    for (let i = 0; i < 9; i++) {
-        const casilla = document.getElementById(`casilla${i}`);
-        const marcar = () => {
-            if (bloqueado || turno !== 'X' || tablero[i] !== '') return;
-            
-            // Aplicar animación
-            casilla.style.transform = 'scale(0.85)';
-            setTimeout(() => {
-                casilla.style.transform = 'scale(1)';
-                colocarFicha(i, 'X', casilla);
-                tablero[i] = 'X';
-                mostrarReaccionIA();
-
-                const resultado = verificarGanador(tablero, combinaciones);
-                if (resultado) {
-                    mostrarWin(resultado.index + 1);
-                    bloqueado = true;
-                    setTimeout(() => reiniciarJuego('ia'), 4000);
-                } else if (tablero.every(c => c !== '')) {
-                    bloqueado = true;
-                    setTimeout(() => reiniciarJuego('ia'), 4000);
-                } else {
-                    turno = 'O';
-                    setTimeout(() => iaResponder(), 500);
-                }
-            }, 100);
-        };
-        
-        casilla.addEventListener('click', marcar);
-        casilla.addEventListener('touchstart', e => {
-            e.preventDefault();
-            casilla.style.transform = 'scale(0.85)';
-        }, { passive: false });
-        
-        casilla.addEventListener('touchend', () => {
-            casilla.style.transform = 'scale(1)';
-            marcar();
-        });
-    }
-
-    function iaResponder() {
-        if (bloqueado || turno !== 'O') return;
-        const vacias = tablero.map((v, i) => v === '' ? i : null).filter(i => i !== null);
-        const index = vacias[Math.floor(Math.random() * vacias.length)];
-        const casilla = document.getElementById(`casilla${index}`);
-        colocarFicha(index, 'O', casilla);
-        tablero[index] = 'O';
-
-        const resultado = verificarGanador(tablero, combinaciones);
-        if (resultado) {
-            mostrarWin(resultado.index + 1);
-            bloqueado = true;
-            setTimeout(() => reiniciarJuego('ia'), 4000);
-        } else if (tablero.every(c => c !== '')) {
-            bloqueado = true;
-            setTimeout(() => reiniciarJuego('ia'), 4000);
-        } else {
-            turno = 'X';
-        }
-    }
-}
-
-
-// 🧩 Colocar ficha visual
-function colocarFicha(i, tipo, casillaRef) {
+function colocarFicha(index, tipo) {
     const ficha = document.createElement('img');
-    ficha.src = tipo === 'X'
-        ? 'button/x.png'
-        : 'button/o.png';
-
-    const estilo = window.getComputedStyle(casillaRef);
-    Object.assign(ficha.style, {
-        position: 'absolute',
-        width: '32px',
-        height: '32px',
-        left: estilo.left,
-        top: estilo.top,
-        zIndex: '5',
-        imageRendering: 'pixelated'
-    });
-
-    ficha.id = `ficha-${i}`;
+    ficha.src = MICHI.rutas.fichas[tipo];
     ficha.alt = tipo;
-    document.getElementById('michi-canvas').appendChild(ficha);
+    ficha.id = `ficha-${index}`;
+    ficha.style.position = 'absolute';
+    ficha.style.width = '32px';
+    ficha.style.height = '32px';
+    ficha.style.left = MICHI.elementos.casillas[index].style.left;
+    ficha.style.top = MICHI.elementos.casillas[index].style.top;
+    ficha.style.zIndex = '5';
+    ficha.style.imageRendering = 'pixelated';
+    MICHI.elementos.canvas.appendChild(ficha);
 }
 
-// 🏆 Verificación de victoria
-function verificarGanador(tablero, combinaciones) {
+function verificarGanador(tablero) {
+    const combinaciones = obtenerCombinacionesGanadoras();
     for (let i = 0; i < combinaciones.length; i++) {
         const [a, b, c] = combinaciones[i];
         if (tablero[a] && tablero[a] === tablero[b] && tablero[a] === tablero[c]) {
-            return { jugador: tablero[a], index: i };
+            return { jugador: tablero[a], combinacion: i };
         }
     }
     return null;
 }
 
-// 🖼️ Imagen de victoria
-function mostrarWin(winIndex) {
+function mostrarGanador(combinacionIndex) {
     const winImg = document.createElement('img');
-    winImg.src = `michi_win/win${winIndex}.png`;
-    Object.assign(winImg.style, {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '135px',
-        height: '240px',
-        zIndex: '10',
-        imageRendering: 'pixelated'
-    });
+    winImg.src = MICHI.rutas.victorias[combinacionIndex];
     winImg.id = 'win-img';
-    document.getElementById('michi-canvas').appendChild(winImg);
+    winImg.style.position = 'absolute';
+    winImg.style.width = '100%';
+    winImg.style.height = '100%';
+    winImg.style.zIndex = '10';
+    winImg.style.imageRendering = 'pixelated';
+    MICHI.elementos.canvas.appendChild(winImg);
 }
 
-// 🔁 Reinicio del juego respetando el modo
 function reiniciarJuego(modo) {
-    const canvas = document.getElementById('michi-canvas');
+    // Limpiar elementos dinámicos
+    ['win-img', 'indicador-ia', 'ia-reaccion'].forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.remove();
+    });
 
-    // 🧹 Eliminar fichas
+    // Limpiar fichas
     for (let i = 0; i < 9; i++) {
         const ficha = document.getElementById(`ficha-${i}`);
-        if (ficha) canvas.removeChild(ficha);
+        if (ficha) ficha.remove();
     }
 
-    // 🧹 Eliminar imagen de victoria
-    const winImg = document.getElementById('win-img');
-    if (winImg) canvas.removeChild(winImg);
-
-    // 🧹 Eliminar reacción IA si existe
-    const reaccion = document.getElementById('ia-reaccion');
-    if (reaccion) canvas.removeChild(reaccion);
-
-    // ✅ Reiniciar según modo
-    if (modo === 'local') {
-        activarMultijugadorLocal();
+    // Reiniciar según modo
+    if (modo === 'ia') {
+        mostrarIndicadorIA();
+        iniciarModoIA();
     } else {
-        const indicador = document.getElementById('indicador-ia');
-        if (!indicador) mostrarIndicadorIA();
-        activarModoIA();
+        iniciarModoLocal();
     }
 }
-// 🚀 Inicialización principal al cargar
-document.addEventListener('DOMContentLoaded', () => {
+
+function iniciarModoLocal() {
+    let turno = 'X';
+    let tablero = Array(9).fill('');
+    let juegoActivo = true;
+
+    MICHI.elementos.casillas.forEach((casilla, index) => {
+        casilla.onclick = casilla.ontouchend = () => {
+            if (!juegoActivo || tablero[index] !== '') return;
+
+            // Animación
+            casilla.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+                casilla.style.transform = 'scale(1)';
+                
+                // Colocar ficha
+                tablero[index] = turno;
+                colocarFicha(index, turno);
+
+                // Verificar ganador
+                const resultado = verificarGanador(tablero);
+                if (resultado) {
+                    juegoActivo = false;
+                    mostrarGanador(resultado.combinacion);
+                    setTimeout(() => reiniciarJuego('local'), 3000);
+                } else if (!tablero.includes('')) {
+                    // Empate
+                    juegoActivo = false;
+                    setTimeout(() => reiniciarJuego('local'), 1000);
+                } else {
+                    // Cambiar turno
+                    turno = turno === 'X' ? 'O' : 'X';
+                }
+            }, 100);
+        };
+
+        casilla.ontouchstart = (e) => {
+            e.preventDefault();
+            casilla.style.transform = 'scale(0.85)';
+        };
+    });
+}
+
+function iniciarModoIA() {
+    let turno = 'X';
+    let tablero = Array(9).fill('');
+    let juegoActivo = true;
+
+    function movimientoIA() {
+        if (!juegoActivo || turno !== 'O') return;
+
+        // IA simple: movimiento aleatorio
+        const movimientosDisponibles = tablero
+            .map((valor, index) => valor === '' ? index : null)
+            .filter(index => index !== null);
+
+        if (movimientosDisponibles.length > 0) {
+            const movimiento = movimientosDisponibles[Math.floor(Math.random() * movimientosDisponibles.length)];
+            
+            setTimeout(() => {
+                tablero[movimiento] = 'O';
+                colocarFicha(movimiento, 'O');
+                mostrarReaccionIA();
+
+                const resultado = verificarGanador(tablero);
+                if (resultado) {
+                    juegoActivo = false;
+                    mostrarGanador(resultado.combinacion);
+                    setTimeout(() => reiniciarJuego('ia'), 3000);
+                } else if (!tablero.includes('')) {
+                    juegoActivo = false;
+                    setTimeout(() => reiniciarJuego('ia'), 1000);
+                } else {
+                    turno = 'X';
+                }
+            }, 500);
+        }
+    }
+
+    MICHI.elementos.casillas.forEach((casilla, index) => {
+        casilla.onclick = casilla.ontouchend = () => {
+            if (!juegoActivo || turno !== 'X' || tablero[index] !== '') return;
+
+            // Animación
+            casilla.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+                casilla.style.transform = 'scale(1)';
+                
+                // Colocar ficha
+                tablero[index] = turno;
+                colocarFicha(index, turno);
+
+                // Verificar ganador
+                const resultado = verificarGanador(tablero);
+                if (resultado) {
+                    juegoActivo = false;
+                    mostrarGanador(resultado.combinacion);
+                    setTimeout(() => reiniciarJuego('ia'), 3000);
+                } else if (!tablero.includes('')) {
+                    juegoActivo = false;
+                    setTimeout(() => reiniciarJuego('ia'), 1000);
+                } else {
+                    turno = 'O';
+                    movimientoIA();
+                }
+            }, 100);
+        };
+
+        casilla.ontouchstart = (e) => {
+            e.preventDefault();
+            casilla.style.transform = 'scale(0.85)';
+        };
+    });
+}
+
+// ====== INICIALIZACIÓN ======
+function init() {
     ajustarEscala();
     configurarBotonCerrar();
-
+    
     const modo = obtenerModoJuego();
-    if (modo === 'local') {
-        activarMultijugadorLocal();
-    } else if (modo === 'ia') {
-        activarModoIA();
+    if (modo === 'ia') {
+        mostrarIndicadorIA();
+        iniciarModoIA();
+    } else {
+        iniciarModoLocal();
     }
 
     window.addEventListener('resize', ajustarEscala);
-});
+    window.addEventListener('orientationchange', ajustarEscala);
+}
+
+document.addEventListener('DOMContentLoaded', init);
