@@ -1,13 +1,13 @@
-﻿/* 🎮 Reset general mejorado (sin cambios en tus propiedades originales) */
+﻿/* 🔧 Reset mejorado */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     user-select: none;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* 🧱 Fondo pantalla */
 body {
     background: #000;
     height: 100vh;
@@ -17,26 +17,21 @@ body {
     align-items: center;
 }
 
-/* 🧾 Canvas principal - Renderizado pixelado */
+/* 🎮 Canvas principal - Responsive */
 #tabla-canvas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: relative;
     width: 135px;
     height: 240px;
-    margin-top: -120px;
-    margin-left: -67.5px;
-    transform-origin: top left;
+    transform-origin: center center;
     image-rendering: pixelated;
-    -ms-interpolation-mode: nearest-neighbor;
     overflow: hidden;
 }
 
 /* Fondo base */
 #fondo1 {
     position: absolute;
-    width: 135px;
-    height: 240px;
+    width: 100%;
+    height: 100%;
     background: url('fondo/pantalla/fondo1.png') no-repeat;
     background-size: cover;
     z-index: 1;
@@ -46,10 +41,8 @@ body {
 /* Decorado superior */
 #fondo2 {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 135px;
-    height: 240px;
+    width: 100%;
+    height: 100%;
     z-index: 2;
     image-rendering: pixelated;
 }
@@ -66,7 +59,7 @@ body {
     image-rendering: pixelated;
 }
 
-/* ⏱️ Barra de tiempo animada */
+/* ⏱️ Barra de tiempo */
 #barra-tiempo {
     position: absolute;
     top: 2px;
@@ -86,19 +79,17 @@ body {
     height: 16px;
     z-index: 4;
     image-rendering: pixelated;
-    display: none;
 }
 
-/* 🧪 Fondo decorativo adicional (solo en modo fácil) */
+/* 🧪 Fondo decorativo adicional */
 #indicador-facil {
     position: absolute;
+    width: 100%;
+    height: 224px;
     bottom: 0;
     left: 0;
-    width: 135px;
-    height: 224px;
     z-index: 2;
     image-rendering: pixelated;
-    display: none;
 }
 
 /* 🔬 Elemento químico actual */
@@ -110,10 +101,9 @@ body {
     height: 16px;
     z-index: 6;
     image-rendering: pixelated;
-    display: none;
 }
 
-/* 🧪 Nombre de la familia del elemento */
+/* 🧪 Familia del elemento */
 #familia-actual {
     position: absolute;
     bottom: 3px;
@@ -122,10 +112,9 @@ body {
     height: 48px;
     z-index: 6;
     image-rendering: pixelated;
-    display: none;
 }
 
-/* 🏛️ Grupo romano del elemento (IA, IIA, ...) */
+/* 🏛️ Grupo romano */
 #grupo-actual {
     position: absolute;
     bottom: 21px;
@@ -134,22 +123,20 @@ body {
     height: 16px;
     z-index: 6;
     image-rendering: pixelated;
-    display: none;
 }
 
-/* 📜 Mensaje de victoria/derrota - Posición exacta 64x32px */
+/* 📜 Mensaje final */
 #mensaje-final {
     position: absolute;
-    top: 55px;      /* 55px desde arriba */
-    left: 6px;      /* 6px desde la izquierda */
-    width: 64px;    /* Ancho exacto */
-    height: 32px;   /* Alto exacto */
-    z-index: 100;   /* Encima de todo */
+    top: 55px;
+    left: 6px;
+    width: 64px;
+    height: 32px;
+    z-index: 100;
     image-rendering: pixelated;
-    display: none;
 }
 
-/* 🧪 Casillas de la tabla periódica */
+/* 🧪 Casillas de la tabla */
 .casilla {
     position: absolute;
     width: 16px;
@@ -163,23 +150,61 @@ body {
     padding: 0;
 }
 
-/* Posiciones específicas de las casillas (manteniendo tus valores originales) */
+/* Posiciones específicas de las casillas */
 #elemento1 { top: 22px; right: 13px; }
 #elemento2 { top: 22px; right: 30px; }
 #elemento3 { top: 22px; right: 47px; }
-/* ... (todas las demás posiciones se mantienen igual) ... */
+#elemento4 { top: 22px; right: 64px; }
+#elemento5 { top: 22px; right: 81px; }
+#elemento6 { top: 22px; right: 98px; }
+#elemento7 { top: 22px; right: 115px; }
+
+#elemento8 { top: 39px; right: 30px; }
+#elemento9 { top: 39px; right: 47px; }
+#elemento10 { top: 39px; right: 64px; }
+#elemento11 { top: 39px; right: 81px; }
+#elemento12 { top: 39px; right: 98px; }
+#elemento13 { top: 39px; right: 115px; }
+
+#elemento14 { top: 87px; right: 30px; }
+#elemento15 { top: 87px; right: 47px; }
+#elemento16 { top: 87px; right: 64px; }
+#elemento17 { top: 87px; right: 81px; }
+#elemento18 { top: 87px; right: 98px; }
+#elemento19 { top: 87px; right: 115px; }
+
+#elemento20 { top: 104px; right: 30px; }
+#elemento21 { top: 104px; right: 47px; }
+#elemento22 { top: 104px; right: 64px; }
+#elemento23 { top: 104px; right: 81px; }
+#elemento24 { top: 104px; right: 98px; }
+#elemento25 { top: 104px; right: 115px; }
+
+#elemento26 { top: 121px; right: 30px; }
+#elemento27 { top: 121px; right: 47px; }
+#elemento28 { top: 121px; right: 64px; }
+#elemento29 { top: 121px; right: 81px; }
+#elemento30 { top: 121px; right: 98px; }
+#elemento31 { top: 121px; right: 115px; }
+
+#elemento32 { top: 138px; right: 30px; }
+#elemento33 { top: 138px; right: 47px; }
+#elemento34 { top: 138px; right: 64px; }
+#elemento35 { top: 138px; right: 81px; }
+#elemento36 { top: 138px; right: 98px; }
+#elemento37 { top: 138px; right: 115px; }
+
+#elemento38 { top: 155px; right: 30px; }
+#elemento39 { top: 155px; right: 47px; }
+#elemento40 { top: 155px; right: 64px; }
+#elemento41 { top: 155px; right: 81px; }
+#elemento42 { top: 155px; right: 98px; }
+#elemento43 { top: 155px; right: 115px; }
+
+#elemento44 { top: 172px; right: 13px; }
+#elemento45 { top: 172px; right: 30px; }
+#elemento46 { top: 172px; right: 47px; }
+#elemento47 { top: 172px; right: 64px; }
+#elemento48 { top: 172px; right: 81px; }
+#elemento49 { top: 172px; right: 98px; }
 #elemento50 { top: 172px; right: 115px; }
-
-/* Optimización para móviles */
-@media (max-width: 400px) {
-    #tabla-canvas {
-        transform: scale(0.9) !important;
-    }
-}
-
-/* Corrección de eventos táctiles */
-@media (hover: none) {
-    .casilla {
-        touch-action: manipulation;
-    }
-}
