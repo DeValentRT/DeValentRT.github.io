@@ -1,10 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>Mascota Virtual</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Precarga de imágenes críticas */
+        body::after {
+            content: url('IdleSentado/animation_cat1.png') url('fondo/pared/tiles_map1.png') url('fondo/suelo/tiles_map1.png');
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
@@ -16,15 +23,15 @@
         
         <!-- Capa del Gato -->
         <div id="gato-container" class="layer">
-            <img id="gato-sprite" src="IdleSentado/animation_cat1.png" alt="Gato sentado">
+            <img id="gato-sprite" src="IdleSentado/animation_cat1.png" alt="Gato sentado" loading="eager">
         </div>
         
-        <!-- Capa de Stats (estática) -->
+        <!-- Capa de Stats -->
         <div id="stats-layer"></div>
         
-        <!-- Capa de Mochila (clickeable) -->
-        <div id="mochila-container"></div>
+        <!-- Capa de Mochila -->
+        <div id="mochila-container" aria-label="Abrir mochila"></div>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
