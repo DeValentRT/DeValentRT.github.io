@@ -1,4 +1,4 @@
-﻿// ====== CONSTANTES ======
+// ====== CONFIGURACIÓN ======
 const CONFIG = {
     dificultades: {
         facil: {
@@ -43,26 +43,29 @@ let juegoActivo = true;
 
 // ====== FUNCIONES DE INICIO ======
 function iniciarJuego() {
-    configurarEscala();
+    ajustarEscala();
     configurarBotones();
     configurarDificultad();
     reiniciarEstadoJuego();
 }
 
-function configurarEscala() {
-    const escala = Math.min(
-        window.innerWidth / 135,
-        window.innerHeight / 240
-    );
-    document.getElementById('tabla-canvas').style.transform = `scale(${escala})`;
+function ajustarEscala() {
+    const windowRatio = window.innerWidth / window.innerHeight;
+    const gameRatio = 135 / 240;
+    let scale;
     
-    window.addEventListener('resize', () => {
-        const nuevaEscala = Math.min(
-            window.innerWidth / 135,
-            window.innerHeight / 240
-        );
-        document.getElementById('tabla-canvas').style.transform = `scale(${nuevaEscala})`;
-    });
+    if (windowRatio > gameRatio) {
+        // Pantalla más ancha (landscape)
+        scale = window.innerHeight / 240;
+    } else {
+        // Pantalla más alta (portrait)
+        scale = window.innerWidth / 135;
+    }
+    
+    document.getElementById('tabla-canvas').style.transform = `scale(${scale})`;
+    
+    window.addEventListener('resize', ajustarEscala);
+    window.addEventListener('orientationchange', ajustarEscala);
 }
 
 function configurarBotones() {
@@ -70,6 +73,10 @@ function configurarBotones() {
     document.getElementById('boton-cerrar').addEventListener('click', () => {
         window.location.href = 'minijuegos.html';
     });
+    
+    document.getElementById('boton-cerrar').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+    }, { passive: false });
 
     // Configurar eventos para todas las casillas
     for (let i = 1; i <= 50; i++) {
@@ -231,16 +238,11 @@ function mostrarMensajeFinal(tipo) {
     clearInterval(temporizador);
     
     const mensaje = document.getElementById('mensaje-final');
-    // Extrae solo el número (elimina 'mensaje' del tipo)
     const numeroMensaje = tipo.replace('mensaje', '');
     mensaje.src = `${CONFIG.rutas.mensajes}${numeroMensaje}.png`;
     mensaje.style.display = 'block';
     
-    mensaje.onerror = () => {
-        console.error(`Error al cargar: ${CONFIG.rutas.mensajes}${numeroMensaje}.png`);
-    };
-    
-    setTimeout(reiniciarEstadoJuego, tipo === 'mensaje3' ? 3000 : 2000);
+    setTimeout(() => reiniciarEstadoJuego(), tipo === 'mensaje3' ? 3000 : 2000);
 }
 
 // ====== FUNCIONES AUXILIARES ======
