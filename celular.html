@@ -2,28 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pantalla Celular</title>
-
-    <!-- Estilos -->
     <link rel="stylesheet" href="celular.css">
 </head>
-
 <body>
-    <!-- 🖥️ Canvas principal -->
     <div id="celular-canvas">
-
-        <!-- 🧱 Fondo base corregido -->
         <div id="fondo-base" class="layer"></div>
-
-        <!-- 🐱 Fondo intermedio (gato decorativo) -->
         <div id="fondo-gato" class="layer"></div>
-
-        <!-- 📱 Imagen superior decorativa -->
         <img id="imagen-cel" src="fondo/pantalla/cel.png" alt="Celular decorativo">
-
-        <!-- 📦 Iconos tipo app (solo 5) -->
         <div id="app-buttons">
             <img src="sprites/button/app1.png" class="app-icon" id="app1" alt="App 1">
             <img src="sprites/button/app2.png" class="app-icon" id="app2" alt="App 2">
@@ -31,13 +18,8 @@
             <img src="sprites/button/app4.png" class="app-icon" id="app4" alt="App 4">
             <img src="sprites/button/app5.png" class="app-icon" id="app5" alt="App 5">
         </div>
-
-        <!-- 🔙 Botón de regreso -->
         <img src="sprites/button/back.png" id="boton-back" alt="Regresar a mochila">
-
     </div>
-
-    <!-- 🔧 Script -->
     <script src="celular.js"></script>
 </body>
 </html>
