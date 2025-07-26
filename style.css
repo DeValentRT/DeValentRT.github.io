@@ -1,9 +1,8 @@
-/* 🔧 Reset mejorado para móviles */
+/* 🔧 Reset general */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
 }
@@ -14,40 +13,41 @@ body {
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 2vh;
+    align-items: center; /* Solo este cambio para centrado vertical */
 }
 
-/* 🎮 Contenedor principal responsivo */
+/* 🎮 Canvas principal */
 #game-container {
     position: relative;
-    width: 100vw;
-    height: calc(100vw * (240/135)); /* Relación 135x240 */
-    max-width: 135px;
-    max-height: 240px;
+    width: 135px;
+    height: 240px;
     overflow: hidden;
     image-rendering: pixelated;
-    contain: strict;
+    transform-origin: top left;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -120px; /* Mitad de la altura (240px/2) */
+    margin-left: -67.5px; /* Mitad del ancho (135px/2) */
 }
 
-/* 🧱 Capas comunes */
+/* 🧱 Capas scrollables */
 .layer {
     position: absolute;
-    width: 177.78%; /* 240/135*100% */
-    height: 100%;
+    width: 240px;
+    height: 240px;
+    top: 0;
+    left: 0;
     will-change: transform;
-    backface-visibility: hidden;
 }
 
-/* Pared */
 #pared-layer {
-    background: url('fondo/pared/tiles_map1.png') no-repeat center/contain;
+    background: url('fondo/pared/tiles_map1.png') no-repeat;
     z-index: 1;
 }
 
-/* Suelo */
 #suelo-layer {
-    background: url('fondo/suelo/tiles_map1.png') no-repeat center/contain;
+    background: url('fondo/suelo/tiles_map1.png') no-repeat;
     z-index: 2;
     top: auto;
     bottom: 0;
@@ -58,7 +58,6 @@ body {
     z-index: 3;
     display: flex;
     justify-content: center;
-    pointer-events: none;
 }
 
 #gato-sprite {
@@ -67,17 +66,15 @@ body {
     image-rendering: pixelated;
     position: absolute;
     bottom: 40px;
-    /* Posición centrada horizontalmente en el área visible (135px) */
-    left: 85px; /* 50% del contenedor - mitad del ancho del gato */
-    transform: translateX(52.5px); /* Compensa el desplazamiento inicial (240-135)/2 */
+    left: 85px;
 }
 
-/* 📊 Stats */
+/* 🧪 Capa de stats */
 #stats-layer {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: url('fondo/stats/stats.png') no-repeat center/contain;
+    width: 135px;
+    height: 240px;
+    background: url('fondo/stats/stats.png') no-repeat;
     z-index: 4;
     pointer-events: none;
 }
@@ -86,29 +83,10 @@ body {
 #mochila-container {
     position: absolute;
     z-index: 5;
-    width: 23.7%; /* 32/135*100% */
-    height: 20%; /* 48/240*100% */
-    background: url('fondo/stats/mochila.png') no-repeat center/contain;
-    right: 8.9%; /* 12/135*100% */
-    bottom: 2.1%; /* 5/240*100% */
+    width: 32px;
+    height: 48px;
+    background: url('fondo/stats/mochila.png') no-repeat;
+    right: 12px;
+    bottom: 5px;
     cursor: pointer;
-    touch-action: manipulation;
-}
-
-/* 📱 Media Queries para orientación */
-@media (orientation: landscape) {
-    #game-container {
-        width: calc(100vh * (135/240));
-        height: 100vh;
-        max-width: none;
-        max-height: none;
-    }
-}
-
-@media (max-width: 400px) and (orientation: portrait) {
-    #gato-sprite {
-        width: 35%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
 }
