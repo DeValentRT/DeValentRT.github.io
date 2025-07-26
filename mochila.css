@@ -19,16 +19,12 @@ body {
     font-family: 'Pixel', sans-serif;
 }
 
-/* 🎮 CONTENEDOR PRINCIPAL */
+/* 🎮 CONTENEDOR PRINCIPAL - AHORA RESPONSIVE */
 #mochila-canvas {
-    position: absolute;
+    position: relative;
     width: 135px;
     height: 240px;
-    top: 50%;
-    left: 50%;
-    margin-top: -120px;
-    margin-left: -67.5px;
-    transform-origin: top left;
+    transform-origin: center center;
     image-rendering: pixelated;
     overflow: hidden;
     z-index: 1;
@@ -48,7 +44,7 @@ body {
     z-index: 1;
 }
 
-/* 🔘 BOTÓN CERRAR (Mantiene animación simple) */
+/* 🔘 BOTÓN CERRAR */
 #boton-superior {
     position: absolute;
     width: 16px;
@@ -66,7 +62,7 @@ body {
     transform: scale(0.85);
 }
 
-/* 🎮 BOTÓN CELULAR (Animación sutil) */
+/* 🎮 BOTÓN CELULAR */
 #boton-lateral {
     position: absolute;
     width: 16px;
@@ -85,11 +81,4 @@ body {
     transform: translateY(-50%) scale(0.9);
     opacity: 0.85;
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
-}
-
-/* 📱 RESPONSIVE */
-@media (max-width: 400px) {
-    #mochila-canvas {
-        transform: scale(0.9);
-    }
 }
