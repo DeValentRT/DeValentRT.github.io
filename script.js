@@ -1,4 +1,4 @@
-﻿// ===== VARIABLES GLOBALES =====
+// ===== VARIABLES GLOBALES =====
 const paredLayer = document.getElementById('pared-layer');
 const sueloLayer = document.getElementById('suelo-layer');
 const gatoContainer = document.getElementById('gato-container');
@@ -7,7 +7,7 @@ const mochilaContainer = document.getElementById('mochila-container');
 
 // Configuración de desplazamiento
 let startX = 0;
-let currentX = -52.5;
+let currentX = -52.5; // Desplazamiento inicial (240-135)/2
 const maxScroll = -(240 - 135);
 
 // Animación
@@ -15,6 +15,9 @@ let frameActual = 0;
 const totalFrames = 8;
 const fps = 4;
 let animacionInterval;
+
+// Compensación para centrar el gato (diferencia entre el fondo y el área visible)
+const compensacionCentrado = 52.5; // (240 - 135) / 2
 
 // ===== ANIMACIÓN DEL GATO =====
 function iniciarAnimacion() {
@@ -25,7 +28,7 @@ function iniciarAnimacion() {
     }, 1000 / fps);
 }
 
-// ===== INTERACCIÓN MOCHILA (actualizado) =====
+// ===== INTERACCIÓN MOCHILA =====
 function configurarMochila() {
     mochilaContainer.addEventListener('click', manejarClickMochila);
     mochilaContainer.addEventListener('touchstart', manejarClickMochila, { passive: true });
@@ -51,7 +54,10 @@ function manejarMovimiento(e) {
 
     paredLayer.style.transform = `translateX(${newX}px)`;
     sueloLayer.style.transform = `translateX(${newX}px)`;
-    gatoContainer.style.transform = `translateX(${newX}px)`;
+    
+    // Aplicamos la compensación para mantener el gato centrado
+    gatoContainer.style.transform = `translateX(${newX + compensacionCentrado}px)`;
+    
     e.preventDefault();
 }
 
@@ -72,9 +78,10 @@ function init() {
     iniciarAnimacion();
     configurarMochila();
 
+    // Posición inicial con compensación para el gato
     paredLayer.style.transform = `translateX(${currentX}px)`;
     sueloLayer.style.transform = `translateX(${currentX}px)`;
-    gatoContainer.style.transform = `translateX(${currentX}px)`;
+    gatoContainer.style.transform = `translateX(${currentX + compensacionCentrado}px)`;
 
     function ajustarEscala() {
         const scale = Math.min(
