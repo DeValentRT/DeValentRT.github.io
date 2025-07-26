@@ -2,54 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Seleccionar Dificultad</title>
     <link rel="stylesheet" href="interfaz2.css">
-    <style>
-        /* Animación de botón presionado */
-        .boton-dificultad, #boton-cerrar {
-            transition: transform 0.1s ease;
-        }
-        .boton-dificultad:active, #boton-cerrar:active {
-            transform: scale(0.85);
-        }
-    </style>
 </head>
 <body>
     <div id="interfaz2-canvas">
-
         <!-- 🧱 Fondo base -->
         <div id="fondo-base" class="layer"></div>
-
+        
         <!-- 🧩 Interfaz decorativa -->
         <img id="interfaz-img" src="minijuegos/interfaz3.png" alt="Interfaz de dificultad">
-
+        
         <!-- 🔘 Botones de dificultad -->
         <img src="button/dificult1.png" id="dif1" class="boton-dificultad" alt="Fácil">
         <img src="button/dificult2.png" id="dif2" class="boton-dificultad" alt="Media">
         <img src="button/dificult3.png" id="dif3" class="boton-dificultad" alt="Difícil">
-
+        
         <!-- 🔙 Botón de cerrar -->
         <img src="sprites/button/button_2.png" id="boton-cerrar" alt="Cerrar interfaz">
-
     </div>
     <script src="interfaz2.js"></script>
-    <script>
-        // Configurar animaciones táctiles
-        document.querySelectorAll('.boton-dificultad, #boton-cerrar').forEach(boton => {
-            boton.addEventListener('touchstart', () => {
-                boton.style.transform = 'scale(0.85)';
-            });
-            
-            boton.addEventListener('touchend', () => {
-                boton.style.transform = 'scale(1)';
-            });
-            
-            boton.addEventListener('touchcancel', () => {
-                boton.style.transform = 'scale(1)';
-            });
-        });
-    </script>
 </body>
 </html>
