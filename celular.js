@@ -43,7 +43,7 @@ function ajustarEscala() {
     CELULAR.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
+// ====== FUNCIONES PRINCIPALES ======
 function manejarClick(boton, destino) {
     const esBotonBack = boton.id === 'boton-back';
     const transformBase = esBotonBack ? 'translateX(-50%) ' : '';
@@ -69,6 +69,7 @@ function manejarClick(boton, destino) {
 }
 
 function configurarBotones() {
+    // Configuración para clicks (se mantiene igual)
     CELULAR.elementos.botonBack.addEventListener('click', () => {
         manejarClick(CELULAR.elementos.botonBack, 'mochila.html');
     });
@@ -79,10 +80,13 @@ function configurarBotones() {
         });
     });
 
+    // Corrección para eventos táctiles
     document.querySelectorAll('.app-icon, #boton-back').forEach(boton => {
         const esBotonBack = boton.id === 'boton-back';
         const transformBase = esBotonBack ? 'translateX(-50%) ' : '';
+        const destino = esBotonBack ? 'mochila.html' : CELULAR.rutas[boton.id] || null;
 
+        // Touchstart (se mantiene igual)
         boton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             boton.style.transform = `${transformBase}scale(${CELULAR.animacion.escala})`;
@@ -90,10 +94,21 @@ function configurarBotones() {
             boton.style.opacity = '0.9';
         }, { passive: false });
 
-        boton.addEventListener('touchend', () => {
-            boton.style.transform = `${transformBase}scale(1)`;
-            boton.style.filter = 'brightness(1)';
-            boton.style.opacity = '1';
+        // Touchend (corregido para ejecutar la acción)
+        boton.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (destino) {
+                setTimeout(() => {
+                    boton.style.transform = `${transformBase}scale(1)`;
+                    boton.style.filter = 'brightness(1)';
+                    boton.style.opacity = '1';
+                    window.location.href = destino;
+                }, CELULAR.animacion.duracion + CELULAR.animacion.esperaRedireccion);
+            } else {
+                boton.style.transform = `${transformBase}scale(1)`;
+                boton.style.filter = 'brightness(1)';
+                boton.style.opacity = '1';
+            }
         });
     });
 }
