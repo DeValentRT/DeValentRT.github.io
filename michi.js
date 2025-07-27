@@ -16,17 +16,15 @@ const MICHI = {
     }
 };
 
-// ====== FUNCIÓN DE ESCALADO MEJORADA ======
+// ====== FUNCIÓN DE ESCALADO ======
 function ajustarEscala() {
     const windowRatio = window.innerWidth / window.innerHeight;
     const gameRatio = 135 / 240;
     let scale;
     
     if (windowRatio > gameRatio) {
-        // Pantalla más ancha (landscape)
         scale = window.innerHeight / 240;
     } else {
-        // Pantalla más alta (portrait)
         scale = window.innerWidth / 135;
     }
     
@@ -43,10 +41,6 @@ function configurarBotonCerrar() {
     MICHI.elementos.botonCerrar.addEventListener('click', () => {
         window.location.href = MICHI.rutas.cerrar;
     });
-    
-    MICHI.elementos.botonCerrar.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-    }, { passive: false });
 }
 
 function mostrarIndicadorIA() {
@@ -79,18 +73,51 @@ function obtenerCombinacionesGanadoras() {
     ];
 }
 
+// FUNCIÓN AUXILIAR PARA BUSCAR JUGADAS GANADORAS O BLOQUEOS
+function buscarJugadaGanadora(tableroActual, jugador) {
+    const combinaciones = obtenerCombinacionesGanadoras();
+    
+    for (const combo of combinaciones) {
+        const [a, b, c] = combo;
+        // Verificar si hay dos fichas del jugador y un espacio vacío
+        if (tableroActual[a] === jugador && tableroActual[b] === jugador && tableroActual[c] === '') return c;
+        if (tableroActual[a] === jugador && tableroActual[c] === jugador && tableroActual[b] === '') return b;
+        if (tableroActual[b] === jugador && tableroActual[c] === jugador && tableroActual[a] === '') return a;
+    }
+    
+    return null;
+}
+
+// FUNCIÓN CORREGIDA PARA POSICIONAMIENTO PRECISO
 function colocarFicha(index, tipo) {
     const ficha = document.createElement('img');
     ficha.src = MICHI.rutas.fichas[tipo];
     ficha.alt = tipo;
     ficha.id = `ficha-${index}`;
-    ficha.style.position = 'absolute';
-    ficha.style.width = '32px';
-    ficha.style.height = '32px';
-    ficha.style.left = MICHI.elementos.casillas[index].style.left;
-    ficha.style.top = MICHI.elementos.casillas[index].style.top;
-    ficha.style.zIndex = '5';
-    ficha.style.imageRendering = 'pixelated';
+    
+    // Mapeo de posiciones exactas según tu CSS
+    const posiciones = [
+        {top: '55px', left: '8px'},   // casilla0
+        {top: '55px', left: '51px'},  // casilla1
+        {top: '55px', left: '94px'},  // casilla2
+        {top: '102px', left: '8px'},  // casilla3
+        {top: '102px', left: '51px'}, // casilla4
+        {top: '102px', left: '94px'}, // casilla5
+        {top: '149px', left: '8px'},  // casilla6
+        {top: '149px', left: '51px'}, // casilla7
+        {top: '149px', left: '94px'}  // casilla8
+    ];
+    
+    Object.assign(ficha.style, {
+        position: 'absolute',
+        width: '32px',
+        height: '32px',
+        left: posiciones[index].left,
+        top: posiciones[index].top,
+        zIndex: '5',
+        imageRendering: 'pixelated'
+    });
+    
     MICHI.elementos.canvas.appendChild(ficha);
 }
 
@@ -109,11 +136,13 @@ function mostrarGanador(combinacionIndex) {
     const winImg = document.createElement('img');
     winImg.src = MICHI.rutas.victorias[combinacionIndex];
     winImg.id = 'win-img';
-    winImg.style.position = 'absolute';
-    winImg.style.width = '100%';
-    winImg.style.height = '100%';
-    winImg.style.zIndex = '10';
-    winImg.style.imageRendering = 'pixelated';
+    Object.assign(winImg.style, {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        zIndex: '10',
+        imageRendering: 'pixelated'
+    });
     MICHI.elementos.canvas.appendChild(winImg);
 }
 
@@ -145,7 +174,7 @@ function iniciarModoLocal() {
     let juegoActivo = true;
 
     MICHI.elementos.casillas.forEach((casilla, index) => {
-        casilla.onclick = casilla.ontouchend = () => {
+        const manejarClick = () => {
             if (!juegoActivo || tablero[index] !== '') return;
 
             // Animación
@@ -164,16 +193,17 @@ function iniciarModoLocal() {
                     mostrarGanador(resultado.combinacion);
                     setTimeout(() => reiniciarJuego('local'), 3000);
                 } else if (!tablero.includes('')) {
-                    // Empate
                     juegoActivo = false;
                     setTimeout(() => reiniciarJuego('local'), 1000);
                 } else {
-                    // Cambiar turno
                     turno = turno === 'X' ? 'O' : 'X';
                 }
             }, 100);
         };
 
+        casilla.onclick = manejarClick;
+        casilla.ontouchend = manejarClick;
+        
         casilla.ontouchstart = (e) => {
             e.preventDefault();
             casilla.style.transform = 'scale(0.85)';
@@ -181,6 +211,7 @@ function iniciarModoLocal() {
     });
 }
 
+// IA MEJORADA CON ESTRATEGIA BÁSICA
 function iniciarModoIA() {
     let turno = 'X';
     let tablero = Array(9).fill('');
@@ -189,14 +220,39 @@ function iniciarModoIA() {
     function movimientoIA() {
         if (!juegoActivo || turno !== 'O') return;
 
-        // IA simple: movimiento aleatorio
-        const movimientosDisponibles = tablero
-            .map((valor, index) => valor === '' ? index : null)
-            .filter(index => index !== null);
+        // 1. Buscar jugada ganadora
+        let movimiento = buscarJugadaGanadora(tablero, 'O');
+        
+        // 2. Bloquear jugador si está por ganar
+        if (movimiento === null) {
+            movimiento = buscarJugadaGanadora(tablero, 'X');
+        }
+        
+        // 3. Jugar en el centro si está libre
+        if (movimiento === null && tablero[4] === '') {
+            movimiento = 4;
+        }
+        
+        // 4. Jugar en una esquina si está libre
+        if (movimiento === null) {
+            const esquinas = [0, 2, 6, 8];
+            const esquinasLibres = esquinas.filter(index => tablero[index] === '');
+            if (esquinasLibres.length > 0) {
+                movimiento = esquinasLibres[Math.floor(Math.random() * esquinasLibres.length)];
+            }
+        }
+        
+        // 5. Movimiento aleatorio si no se aplicó lo anterior
+        if (movimiento === null) {
+            const movimientosDisponibles = tablero
+                .map((valor, index) => valor === '' ? index : null)
+                .filter(index => index !== null);
+            if (movimientosDisponibles.length > 0) {
+                movimiento = movimientosDisponibles[Math.floor(Math.random() * movimientosDisponibles.length)];
+            }
+        }
 
-        if (movimientosDisponibles.length > 0) {
-            const movimiento = movimientosDisponibles[Math.floor(Math.random() * movimientosDisponibles.length)];
-            
+        if (movimiento !== null) {
             setTimeout(() => {
                 tablero[movimiento] = 'O';
                 colocarFicha(movimiento, 'O');
@@ -218,19 +274,16 @@ function iniciarModoIA() {
     }
 
     MICHI.elementos.casillas.forEach((casilla, index) => {
-        casilla.onclick = casilla.ontouchend = () => {
+        const manejarClick = () => {
             if (!juegoActivo || turno !== 'X' || tablero[index] !== '') return;
 
-            // Animación
             casilla.style.transform = 'scale(0.85)';
             setTimeout(() => {
                 casilla.style.transform = 'scale(1)';
                 
-                // Colocar ficha
                 tablero[index] = turno;
                 colocarFicha(index, turno);
 
-                // Verificar ganador
                 const resultado = verificarGanador(tablero);
                 if (resultado) {
                     juegoActivo = false;
@@ -246,6 +299,9 @@ function iniciarModoIA() {
             }, 100);
         };
 
+        casilla.onclick = manejarClick;
+        casilla.ontouchend = manejarClick;
+        
         casilla.ontouchstart = (e) => {
             e.preventDefault();
             casilla.style.transform = 'scale(0.85)';
