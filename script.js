@@ -5,13 +5,13 @@ const gatoContainer = document.getElementById('gato-container');
 const gatoSprite = document.getElementById('gato-sprite');
 const mochilaContainer = document.getElementById('mochila-container');
 
-// Configuración de desplazamiento
+// Configuración de desplazamiento (ajustada la sensibilidad)
 const config = {
     scroll: {
         startX: 0,
         currentX: -52.5,
         maxScroll: -(240 - 135),
-        sensitivity: 1.2
+        sensitivity: 0.6 // Reducida de 1.2 a 0.6 para menos sensibilidad
     },
     animation: {
         frameActual: 0,
