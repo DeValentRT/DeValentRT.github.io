@@ -38,27 +38,37 @@ function ajustarEscala() {
 
 // ====== CONFIGURACIÓN DE BOTONES ======
 function configurarBotones() {
-    // Botón cerrar
+    // Botón cerrar (se mantiene igual)
     INTERFAZ2.elementos.botonCerrar.addEventListener('click', () => {
         window.location.href = INTERFAZ2.rutas.cerrar;
     });
     
-    // Botones de dificultad
+    // Botones de dificultad (se mantiene igual)
     Object.keys(INTERFAZ2.elementos.botonesDificultad).forEach(botonId => {
         INTERFAZ2.elementos.botonesDificultad[botonId].addEventListener('click', () => {
             window.location.href = INTERFAZ2.rutas.dificultad[botonId];
         });
     });
 
-    // Eventos táctiles mejorados
+    // Eventos táctiles mejorados (corrección aplicada)
     document.querySelectorAll('.boton-dificultad, #boton-cerrar').forEach(boton => {
+        const destino = boton.id === 'boton-cerrar'
+            ? INTERFAZ2.rutas.cerrar
+            : INTERFAZ2.rutas.dificultad[boton.id] || null;
+
         boton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             boton.style.transform = 'scale(0.85)';
         }, { passive: false });
 
-        boton.addEventListener('touchend', () => {
+        boton.addEventListener('touchend', (e) => {
+            e.preventDefault();
             boton.style.transform = 'scale(1)';
+            if (destino) {
+                setTimeout(() => {
+                    window.location.href = destino;
+                }, 100); // Pequeño retraso para la animación
+            }
         });
     });
 }
