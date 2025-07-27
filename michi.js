@@ -1,4 +1,4 @@
-﻿// ====== CONFIGURACIÓN ======
+// ====== CONFIGURACIÓN ======
 const MICHI = {
     elementos: {
         canvas: document.getElementById('michi-canvas'),
@@ -38,8 +38,23 @@ function obtenerModoJuego() {
 }
 
 function configurarBotonCerrar() {
-    MICHI.elementos.botonCerrar.addEventListener('click', () => {
+    const manejarClic = () => {
         window.location.href = MICHI.rutas.cerrar;
+    };
+
+    // Evento para click (computadora)
+    MICHI.elementos.botonCerrar.addEventListener('click', manejarClic);
+    
+    // Eventos para touch (móvil)
+    MICHI.elementos.botonCerrar.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        MICHI.elementos.botonCerrar.style.transform = 'scale(0.85)';
+    }, { passive: false });
+    
+    MICHI.elementos.botonCerrar.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        MICHI.elementos.botonCerrar.style.transform = 'scale(1)';
+        setTimeout(manejarClic, 100); // Pequeño retraso para la animación
     });
 }
 
@@ -73,13 +88,11 @@ function obtenerCombinacionesGanadoras() {
     ];
 }
 
-// FUNCIÓN AUXILIAR PARA BUSCAR JUGADAS GANADORAS O BLOQUEOS
 function buscarJugadaGanadora(tableroActual, jugador) {
     const combinaciones = obtenerCombinacionesGanadoras();
     
     for (const combo of combinaciones) {
         const [a, b, c] = combo;
-        // Verificar si hay dos fichas del jugador y un espacio vacío
         if (tableroActual[a] === jugador && tableroActual[b] === jugador && tableroActual[c] === '') return c;
         if (tableroActual[a] === jugador && tableroActual[c] === jugador && tableroActual[b] === '') return b;
         if (tableroActual[b] === jugador && tableroActual[c] === jugador && tableroActual[a] === '') return a;
@@ -88,14 +101,12 @@ function buscarJugadaGanadora(tableroActual, jugador) {
     return null;
 }
 
-// FUNCIÓN CORREGIDA PARA POSICIONAMIENTO PRECISO
 function colocarFicha(index, tipo) {
     const ficha = document.createElement('img');
     ficha.src = MICHI.rutas.fichas[tipo];
     ficha.alt = tipo;
     ficha.id = `ficha-${index}`;
     
-    // Mapeo de posiciones exactas según tu CSS
     const posiciones = [
         {top: '55px', left: '8px'},   // casilla0
         {top: '55px', left: '51px'},  // casilla1
@@ -147,19 +158,16 @@ function mostrarGanador(combinacionIndex) {
 }
 
 function reiniciarJuego(modo) {
-    // Limpiar elementos dinámicos
     ['win-img', 'indicador-ia', 'ia-reaccion'].forEach(id => {
         const elemento = document.getElementById(id);
         if (elemento) elemento.remove();
     });
 
-    // Limpiar fichas
     for (let i = 0; i < 9; i++) {
         const ficha = document.getElementById(`ficha-${i}`);
         if (ficha) ficha.remove();
     }
 
-    // Reiniciar según modo
     if (modo === 'ia') {
         mostrarIndicadorIA();
         iniciarModoIA();
@@ -174,19 +182,16 @@ function iniciarModoLocal() {
     let juegoActivo = true;
 
     MICHI.elementos.casillas.forEach((casilla, index) => {
-        const manejarClick = () => {
+        const manejarJugada = () => {
             if (!juegoActivo || tablero[index] !== '') return;
 
-            // Animación
             casilla.style.transform = 'scale(0.85)';
             setTimeout(() => {
                 casilla.style.transform = 'scale(1)';
                 
-                // Colocar ficha
                 tablero[index] = turno;
                 colocarFicha(index, turno);
 
-                // Verificar ganador
                 const resultado = verificarGanador(tablero);
                 if (resultado) {
                     juegoActivo = false;
@@ -201,17 +206,19 @@ function iniciarModoLocal() {
             }, 100);
         };
 
-        casilla.onclick = manejarClick;
-        casilla.ontouchend = manejarClick;
+        casilla.onclick = manejarJugada;
+        casilla.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            manejarJugada();
+        });
         
-        casilla.ontouchstart = (e) => {
+        casilla.addEventListener('touchstart', (e) => {
             e.preventDefault();
             casilla.style.transform = 'scale(0.85)';
-        };
+        }, { passive: false });
     });
 }
 
-// IA MEJORADA CON ESTRATEGIA BÁSICA
 function iniciarModoIA() {
     let turno = 'X';
     let tablero = Array(9).fill('');
@@ -220,20 +227,9 @@ function iniciarModoIA() {
     function movimientoIA() {
         if (!juegoActivo || turno !== 'O') return;
 
-        // 1. Buscar jugada ganadora
         let movimiento = buscarJugadaGanadora(tablero, 'O');
-        
-        // 2. Bloquear jugador si está por ganar
-        if (movimiento === null) {
-            movimiento = buscarJugadaGanadora(tablero, 'X');
-        }
-        
-        // 3. Jugar en el centro si está libre
-        if (movimiento === null && tablero[4] === '') {
-            movimiento = 4;
-        }
-        
-        // 4. Jugar en una esquina si está libre
+        if (movimiento === null) movimiento = buscarJugadaGanadora(tablero, 'X');
+        if (movimiento === null && tablero[4] === '') movimiento = 4;
         if (movimiento === null) {
             const esquinas = [0, 2, 6, 8];
             const esquinasLibres = esquinas.filter(index => tablero[index] === '');
@@ -241,8 +237,6 @@ function iniciarModoIA() {
                 movimiento = esquinasLibres[Math.floor(Math.random() * esquinasLibres.length)];
             }
         }
-        
-        // 5. Movimiento aleatorio si no se aplicó lo anterior
         if (movimiento === null) {
             const movimientosDisponibles = tablero
                 .map((valor, index) => valor === '' ? index : null)
@@ -274,7 +268,7 @@ function iniciarModoIA() {
     }
 
     MICHI.elementos.casillas.forEach((casilla, index) => {
-        const manejarClick = () => {
+        const manejarJugada = () => {
             if (!juegoActivo || turno !== 'X' || tablero[index] !== '') return;
 
             casilla.style.transform = 'scale(0.85)';
@@ -299,13 +293,16 @@ function iniciarModoIA() {
             }, 100);
         };
 
-        casilla.onclick = manejarClick;
-        casilla.ontouchend = manejarClick;
+        casilla.onclick = manejarJugada;
+        casilla.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            manejarJugada();
+        });
         
-        casilla.ontouchstart = (e) => {
+        casilla.addEventListener('touchstart', (e) => {
             e.preventDefault();
             casilla.style.transform = 'scale(0.85)';
-        };
+        }, { passive: false });
     });
 }
 
