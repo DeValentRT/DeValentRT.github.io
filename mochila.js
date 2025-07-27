@@ -17,35 +17,52 @@ function ajustarEscala() {
     let scale;
     
     if (windowRatio > gameRatio) {
-        // Pantalla más ancha (landscape)
         scale = window.innerHeight / 240;
     } else {
-        // Pantalla más alta (portrait)
         scale = window.innerWidth / 135;
     }
     
     MOCHILA.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
+// ====== FUNCIONES PRINCIPALES ======
 function manejarBotonCelular() {
     const { botonCelular } = MOCHILA.elementos;
     
-    botonCelular.addEventListener('click', () => {
+    const accionCelular = () => {
         setTimeout(() => {
             window.location.href = 'celular.html';
         }, MOCHILA.animacion.duracion);
-    });
+    };
     
+    // Click para desktop
+    botonCelular.addEventListener('click', accionCelular);
+    
+    // Touch para móvil
     botonCelular.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        botonCelular.style.transform = 'translateY(-50%) scale(0.9)';
+        botonCelular.style.opacity = '0.85';
     }, { passive: false });
+    
+    botonCelular.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        accionCelular();
+        botonCelular.style.transform = 'translateY(-50%)';
+        botonCelular.style.opacity = '1';
+    });
 }
 
 function manejarBotonCerrar() {
     const { botonCerrar } = MOCHILA.elementos;
     
     botonCerrar.addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+    
+    // También añadir touch para el botón de cerrar por consistencia
+    botonCerrar.addEventListener('touchend', (e) => {
+        e.preventDefault();
         window.location.href = 'index.html';
     });
 }
