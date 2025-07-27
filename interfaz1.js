@@ -1,4 +1,4 @@
-﻿// ====== CONFIGURACIÓN ======
+// ====== CONFIGURACIÓN ======
 const INTERFAZ = {
     elementos: {
         canvas: document.getElementById('interfaz-canvas'),
@@ -32,36 +32,46 @@ function ajustarEscala() {
     INTERFAZ.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
+// ====== FUNCIONES PRINCIPALES ======
 function configurarBotones() {
-    // Botón volver
+    // Botón volver (se mantiene igual)
     INTERFAZ.elementos.botonVolver.addEventListener('click', () => {
         window.location.href = INTERFAZ.rutas.volver;
     });
 
-    // Botones de modo
+    // Botones de modo (se mantiene igual)
     Object.keys(INTERFAZ.elementos.modos).forEach(modoId => {
         INTERFAZ.elementos.modos[modoId].addEventListener('click', () => {
             window.location.href = INTERFAZ.rutas[modoId];
         });
     });
 
-    // Eventos táctiles
+    // Eventos táctiles (corrección aplicada)
     document.querySelectorAll('.boton-presionable').forEach(boton => {
+        const destino = boton.id === 'boton-volver'
+            ? INTERFAZ.rutas.volver
+            : INTERFAZ.rutas[boton.id] || null;
+
         boton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             boton.style.transform = 'scale(0.85)';
         }, { passive: false });
 
-        boton.addEventListener('touchend', () => {
+        boton.addEventListener('touchend', (e) => {
+            e.preventDefault();
             boton.style.transform = 'scale(1)';
+            if (destino) {
+                setTimeout(() => {
+                    window.location.href = destino;
+                }, 100); // Pequeño retraso para la animación
+            }
         });
     });
 }
 
 // ====== INICIALIZACIÓN ======
 function init() {
-    // Añadir clase a todos los botones
+    // Añadir clase a todos los botones (se mantiene igual)
     document.querySelectorAll('#boton-volver, .mod-btn').forEach(boton => {
         boton.classList.add('boton-presionable');
     });
