@@ -55,10 +55,8 @@ function ajustarEscala() {
     let scale;
     
     if (windowRatio > gameRatio) {
-        // Pantalla más ancha (landscape)
         scale = window.innerHeight / 240;
     } else {
-        // Pantalla más alta (portrait)
         scale = window.innerWidth / 135;
     }
     
@@ -69,23 +67,65 @@ function ajustarEscala() {
 }
 
 function configurarBotones() {
-    // Botón de cerrar
-    document.getElementById('boton-cerrar').addEventListener('click', () => {
+    // Botón de cerrar - Manejo mejorado para touch
+    const botonCerrar = document.getElementById('boton-cerrar');
+    const manejarCierre = () => {
         window.location.href = 'minijuegos.html';
-    });
-    
-    document.getElementById('boton-cerrar').addEventListener('touchstart', (e) => {
-        e.preventDefault();
-    }, { passive: false });
+    };
 
-    // Configurar eventos para todas las casillas
+    botonCerrar.addEventListener('click', manejarCierre);
+    botonCerrar.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        botonCerrar.style.transform = 'scale(0.85)';
+    }, { passive: false });
+    botonCerrar.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        botonCerrar.style.transform = 'scale(1)';
+        setTimeout(manejarCierre, 100);
+    });
+
+    // Configurar eventos para todas las casillas - Versión optimizada
+    const manejarCasilla = (id) => {
+        if (!juegoActivo || !elementoActual) return;
+        
+        const casilla = document.getElementById(`elemento${id}`);
+        if (!casilla) return;
+
+        // Animación de pulsación
+        casilla.style.transform = 'scale(0.85)';
+        setTimeout(() => {
+            casilla.style.transform = 'scale(1)';
+            
+            if (id === elementoActual) {
+                // Respuesta correcta
+                marcarElementoCompletado(id);
+                elementosPendientes = elementosPendientes.filter(e => e !== id);
+                
+                if (dificultadActual === 'facil') {
+                    vidas = CONFIG.dificultades.facil.vidas;
+                    actualizarVidas();
+                }
+                
+                iniciarRonda();
+            } else {
+                // Respuesta incorrecta
+                vidas--;
+                actualizarVidas();
+                
+                if (vidas <= 0) {
+                    mostrarMensajeFinal('mensaje1');
+                }
+            }
+        }, 100);
+    };
+
     for (let i = 1; i <= 50; i++) {
         const casilla = document.getElementById(`elemento${i}`);
         if (casilla) {
-            casilla.addEventListener('click', () => manejarClickCasilla(i));
+            casilla.addEventListener('click', () => manejarCasilla(i));
             casilla.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                manejarClickCasilla(i);
+                manejarCasilla(i);
             }, { passive: false });
         }
     }
@@ -95,13 +135,10 @@ function configurarDificultad() {
     const params = new URLSearchParams(window.location.search);
     let nivel = params.get('nivel');
     
-    // Normalizar nombre de dificultad
     if (nivel === 'media') nivel = 'medio';
-    
     dificultadActual = CONFIG.dificultades[nivel] ? nivel : 'facil';
     vidas = CONFIG.dificultades[dificultadActual].vidas;
     
-    // Mostrar ayudas visuales según dificultad
     document.getElementById('indicador-facil').style.display = 
         CONFIG.dificultades[dificultadActual].fondoExtra ? 'block' : 'none';
     document.getElementById('vidas-facil').style.display = 'block';
@@ -115,9 +152,7 @@ function reiniciarEstadoJuego() {
     elementosPendientes = Array.from({ length: 50 }, (_, i) => i + 1);
     vidas = CONFIG.dificultades[dificultadActual].vidas;
     
-    // Limpiar elementos marcados
     document.querySelectorAll('[data-completado]').forEach(el => el.remove());
-    
     document.getElementById('mensaje-final').style.display = 'none';
     actualizarVidas();
     iniciarRonda();
@@ -126,13 +161,11 @@ function reiniciarEstadoJuego() {
 function iniciarRonda() {
     if (!juegoActivo) return;
     
-    // Verificar si ganó
     if (elementosPendientes.length === 0) {
         mostrarMensajeFinal('mensaje3');
         return;
     }
     
-    // Seleccionar elemento aleatorio
     const indiceAleatorio = Math.floor(Math.random() * elementosPendientes.length);
     elementoActual = elementosPendientes[indiceAleatorio];
     
@@ -142,14 +175,13 @@ function iniciarRonda() {
 
 function mostrarElemento(id) {
     const config = CONFIG.dificultades[dificultadActual];
-    
-    // Mostrar símbolo del elemento
     const elementoImg = document.getElementById('elemento-actual');
+    const familiaImg = document.getElementById('familia-actual');
+    const grupoImg = document.getElementById('grupo-actual');
+    
     elementoImg.src = `${CONFIG.rutas.elementos}${id}.png`;
     elementoImg.style.display = 'block';
     
-    // Mostrar familia (si está habilitado)
-    const familiaImg = document.getElementById('familia-actual');
     if (config.ayudaFamilia) {
         const familiaId = obtenerFamilia(id);
         familiaImg.src = `${CONFIG.rutas.familias}${familiaId}.png`;
@@ -158,8 +190,6 @@ function mostrarElemento(id) {
         familiaImg.style.display = 'none';
     }
     
-    // Mostrar grupo (si está habilitado)
-    const grupoImg = document.getElementById('grupo-actual');
     if (config.ayudaGrupo) {
         const grupoId = obtenerGrupo(id);
         grupoImg.src = `${CONFIG.rutas.grupos}${grupoId}.png`;
@@ -190,44 +220,20 @@ function iniciarTemporizador() {
     }, tiempoTotal / frames);
 }
 
-function manejarClickCasilla(id) {
-    if (!juegoActivo || !elementoActual) return;
-    
-    if (id === elementoActual) {
-        // Respuesta correcta
-        marcarElementoCompletado(id);
-        elementosPendientes = elementosPendientes.filter(e => e !== id);
-        
-        // Reiniciar vidas solo en modo fácil
-        if (dificultadActual === 'facil') {
-            vidas = CONFIG.dificultades.facil.vidas;
-            actualizarVidas();
-        }
-        
-        iniciarRonda();
-    } else {
-        // Respuesta incorrecta
-        vidas--;
-        actualizarVidas();
-        
-        if (vidas <= 0) {
-            mostrarMensajeFinal('mensaje1');
-        }
-    }
-}
-
 function marcarElementoCompletado(id) {
     const casilla = document.getElementById(`elemento${id}`);
     if (!casilla) return;
     
     const img = document.createElement('img');
     img.src = `${CONFIG.rutas.elementos}${id}.png`;
-    img.style.position = 'absolute';
-    img.style.width = '16px';
-    img.style.height = '16px';
-    img.style.top = casilla.style.top;
-    img.style.right = casilla.style.right;
-    img.style.zIndex = '6';
+    Object.assign(img.style, {
+        position: 'absolute',
+        width: '16px',
+        height: '16px',
+        top: casilla.style.top,
+        right: casilla.style.right,
+        zIndex: '6'
+    });
     img.setAttribute('data-completado', 'true');
     
     document.getElementById('tabla-canvas').appendChild(img);
