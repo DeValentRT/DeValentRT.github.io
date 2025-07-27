@@ -31,14 +31,14 @@ function ajustarEscala() {
     MINIJUEGOS.elementos.canvas.style.transform = `scale(${scale})`;
 }
 
-// ====== FUNCIONES PRINCIPALES (SIN CAMBIOS) ======
+// ====== FUNCIONES PRINCIPALES ======
 function configurarBotones() {
-    // Botón de salida
+    // Botón de salida (se mantiene igual)
     MINIJUEGOS.elementos.botonSalir.addEventListener('click', () => {
         window.location.href = 'celular.html';
     });
 
-    // Botones de juegos
+    // Botones de juegos (se mantiene igual)
     Object.keys(MINIJUEGOS.elementos.juegos).forEach(juegoId => {
         MINIJUEGOS.elementos.juegos[juegoId].addEventListener('click', () => {
             if (MINIJUEGOS.rutas[juegoId]) {
@@ -47,22 +47,32 @@ function configurarBotones() {
         });
     });
 
-    // Eventos táctiles para móviles
+    // Eventos táctiles para móviles (corrección aplicada)
     document.querySelectorAll('.boton-presionable').forEach(boton => {
+        const destino = boton.id === 'boton-salir' 
+            ? 'celular.html' 
+            : MINIJUEGOS.rutas[boton.id] || null;
+
         boton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             boton.style.transform = 'scale(0.85)';
         }, { passive: false });
 
-        boton.addEventListener('touchend', () => {
+        boton.addEventListener('touchend', (e) => {
+            e.preventDefault();
             boton.style.transform = 'scale(1)';
+            if (destino) {
+                setTimeout(() => {
+                    window.location.href = destino;
+                }, 100); // Pequeño retraso para la animación
+            }
         });
     });
 }
 
 // ====== INICIALIZACIÓN ======
 function init() {
-    // Añadir clase común a todos los botones
+    // Añadir clase común a todos los botones (se mantiene igual)
     document.querySelectorAll('#boton-salir, .juego-btn').forEach(boton => {
         boton.classList.add('boton-presionable');
     });
