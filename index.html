@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horario universitario</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="main-container">
+    <div class="container">
+      <div class="header">
+        <div class="title">Horario</div>
+        <button class="btn" id="openModal">+ Añadir curso</button>
+      </div>
+
+      <div class="schedule">
+        <div class="schedule-header">
+          <div>Hora</div>
+          <div>Lunes</div>
+          <div>Martes</div>
+          <div>Miércoles</div>
+          <div>Jueves</div>
+          <div>Viernes</div>
+          <div>Sábado</div>
+          <div>Domingo</div>
+        </div>
+
+        <div class="schedule-grid" id="scheduleGrid">
+          <!-- Time column -->
+          <div class="time-col">
+            <!-- 8:00 to 22:00 -->
+            <div class="time-slot">08:00</div>
+            <div class="time-slot">09:00</div>
+            <div class="time-slot">10:00</div>
+            <div class="time-slot">11:00</div>
+            <div class="time-slot">12:00</div>
+            <div class="time-slot">13:00</div>
+            <div class="time-slot">14:00</div>
+            <div class="time-slot">15:00</div>
+            <div class="time-slot">16:00</div>
+            <div class="time-slot">17:00</div>
+            <div class="time-slot">18:00</div>
+            <div class="time-slot">19:00</div>
+            <div class="time-slot">20:00</div>
+            <div class="time-slot">21:00</div>
+          </div>
+
+          <!-- Day columns -->
+          <div class="day-col" data-day="Lunes">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Martes">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Miércoles">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Jueves">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Viernes">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Sábado">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+          <div class="day-col" data-day="Domingo">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel lateral de cursos -->
+    <div class="courses-sidebar" id="coursesSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">📚 Mis Cursos</div>
+        <div class="sidebar-controls">
+          <div class="courses-count">
+            <span id="visibleSessionsCount">0</span>/<span id="totalSessionsCount">0</span> sesiones
+          </div>
+          <div class="conflict-alert" id="conflictAlert" style="display: none;">
+            ⚠ <span id="conflictCount">0</span> conflicto(s)
+          </div>
+        </div>
+      </div>
+      
+      <div class="global-controls">
+        <button class="btn-sidebar" id="showAllBtn">Mostrar todos</button>
+        <button class="btn-sidebar" id="hideAllBtn">Ocultar todos</button>
+      </div>
+      
+      <div class="courses-list" id="coursesList">
+        <!-- Los cursos se insertarán aquí dinámicamente -->
+        <div class="empty-state" id="emptyState">
+          <div>No hay cursos aún</div>
+          <div class="empty-state-sub">Añade tu primer curso para empezar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Añadir/Editar Curso -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Añadir curso</div>
+        <button class="modal-close" id="closeModal" aria-label="Cerrar">×</button>
+      </div>
+      
+      <form id="courseForm">
+        <input type="hidden" id="courseId">
+        
+        <div class="modal-body">
+          <!-- Información básica -->
+          <div class="field">
+            <label class="label" for="courseName">Nombre del curso *</label>
+            <input class="input" id="courseName" type="text" placeholder="Ej. Quimica I" required />
+          </div>
+          <div class="field">
+            <label class="label" for="courseColor">Color del curso</label>
+            <input class="input" id="courseColor" type="color" value="#4f46e5" />
+          </div>
+          <!-- Grupos horarios -->
+          <div class="section-title">Grupos horarios</div>
+          <div id="theoryGroupsContainer">
+            <!-- Grupo por defecto -->
+            <div class="group-container" data-group-index="0">
+              <div class="group-header">
+                <div class="group-title">Grupo Horario <span class="group-code-display">01Q</span></div>
+              </div>
+              
+              <div class="field">
+                <label class="label">Grupo de teoría</label>
+                <select class="select group-select" data-group-type="theory">
+                  <option value="01Q">01Q</option>
+                  <option value="02Q">02Q</option>
+                  <option value="03Q">03Q</option>
+                  <option value="04Q">04Q</option>
+                </select>
+              </div>
+
+              <!-- Profesor para este grupo -->
+              <div class="field">
+                <label class="label">Profesor de teoría (opcional)</label>
+                <input class="input professor-input" type="text" placeholder="Ej. Lic. Huamanizzz" />
+              </div>
+
+              <!-- Horarios de teoría -->
+              <div class="sessions-section">
+                <div class="section-label">Horarios de teoría</div>
+                <div class="theory-sessions">
+                  <!-- Sesión VACÍA por defecto -->
+                  <div class="session-row">
+                    <select class="select day-select">
+                      <option value="">Seleccionar día...</option>
+                      <option value="Lunes">Lunes</option>
+                      <option value="Martes">Martes</option>
+                      <option value="Miércoles">Miércoles</option>
+                      <option value="Jueves">Jueves</option>
+                      <option value="Viernes">Viernes</option>
+                      <option value="Sábado">Sábado</option>
+                      <option value="Domingo">Domingo</option>
+                    </select>
+                    <div class="time-inputs">
+                      <input type="time" class="input time-input" value="" min="08:00" max="22:00" step="300">
+                      <span class="time-separator">-</span>
+                      <input type="time" class="input time-input" value="" min="08:30" max="22:00" step="300">
+                    </div>
+                    <button type="button" class="btn-remove" title="Eliminar">×</button>
+                  </div>
+                </div>
+                <button type="button" class="btn-add" data-type="theory-session">
+                  + Añadir horario de teoría
+                </button>
+              </div>
+
+              <!-- Laboratorios -->
+              <div class="labs-section">
+                <div class="section-label">Laboratorios (opcional)</div>
+                <button type="button" class="btn-add" data-type="toggle-labs">
+                  + Añadir laboratorios
+                </button>
+                
+                <div class="labs-container" style="display: none;">
+                  <!-- Contenedor vacío para laboratorios -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón para añadir otro grupo horario -->
+          <button type="button" class="btn-add-group" id="addGroupBtn">
+            + Añadir otro grupo horario
+          </button>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancelModal">Cancelar</button>
+          <button type="button" class="btn-danger" id="deleteCourse" style="display: none;">Eliminar</button>
+          <button type="submit" class="btn" id="submitBtn">Guardar curso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
