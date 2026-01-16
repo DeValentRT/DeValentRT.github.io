@@ -4,6 +4,12 @@ let visibilityState = JSON.parse(localStorage.getItem('visibilityState')) || {};
 let editingCourseId = null;
 let highlightedConflicts = [];
 
+// NUEVAS VARIABLES PARA EL GENERADOR
+let isGeneratorExpanded = false;
+let selectedCourseIds = []; // IDs de cursos seleccionados para generación
+let scheduleCombinations = []; // Array de combinaciones sin conflictos
+let selectedCombinationIndex = -1; // Índice de combinación seleccionada (-1 = ninguna)
+
 // Elementos DOM
 const modalBackdrop = document.getElementById('modalBackdrop');
 const openModalBtn = document.getElementById('openModal');
@@ -24,6 +30,20 @@ const conflictAlert = document.getElementById('conflictAlert');
 const conflictCount = document.getElementById('conflictCount');
 const showAllBtn = document.getElementById('showAllBtn');
 const hideAllBtn = document.getElementById('hideAllBtn');
+
+// NUEVOS ELEMENTOS DOM PARA EL GENERADOR
+const generatorHeader = document.getElementById('generatorHeader');
+const generatorContent = document.getElementById('generatorContent');
+const coursesSelection = document.getElementById('coursesSelection');
+const selectedCoursesCount = document.getElementById('selectedCoursesCount');
+const searchCount = document.getElementById('searchCount');
+const searchSchedulesBtn = document.getElementById('searchSchedulesBtn');
+const generatorResults = document.getElementById('generatorResults');
+const resultsCount = document.getElementById('resultsCount');
+const resultsList = document.getElementById('resultsList');
+const noResults = document.getElementById('noResults');
+const noResultsCount = document.getElementById('noResultsCount');
+const resetViewBtn = document.getElementById('resetViewBtn');
 
 // Helper functions
 const qs = (sel, el = document) => el.querySelector(sel);
@@ -457,6 +477,9 @@ function renderSidebar() {
   
   // Verificar conflictos
   checkForConflicts();
+  
+  // Renderizar también el generador
+  renderGeneratorUI();
 }
 
 function renderTheoryGroupHTML(course, group, isVisible, visibleSessions, totalSessions, labGroupsHTML) {
@@ -941,6 +964,410 @@ function deleteCourse(id) {
   }
 }
 
+// =============================================
+// NUEVAS FUNCIONES PARA EL GENERADOR DE HORARIOS
+// =============================================
+
+// Función para inicializar el generador
+function initScheduleGenerator() {
+  // Inicializar con todos los cursos seleccionados
+  selectedCourseIds = courses.map(course => course.id);
+  
+  // Event listeners
+  generatorHeader.addEventListener('click', toggleGenerator);
+  searchSchedulesBtn.addEventListener('click', findScheduleCombinations);
+  resetViewBtn.addEventListener('click', resetScheduleView);
+  
+  // Renderizar UI inicial
+  renderGeneratorUI();
+}
+
+// Función para expandir/colapsar el generador
+function toggleGenerator() {
+  isGeneratorExpanded = !isGeneratorExpanded;
+  
+  if (isGeneratorExpanded) {
+    generatorContent.style.display = 'block';
+    generatorHeader.classList.add('expanded');
+  } else {
+    generatorContent.style.display = 'none';
+    generatorHeader.classList.remove('expanded');
+    // Al colapsar: limpiar resultados y restablecer vista
+    clearGeneratorResults();
+    resetScheduleView();
+  }
+  
+  renderGeneratorUI();
+}
+
+// Función para renderizar la interfaz del generador
+function renderGeneratorUI() {
+  // Actualizar lista de cursos seleccionables
+  if (courses.length === 0) {
+    coursesSelection.innerHTML = `
+      <div class="generator-empty-state">
+        No hay cursos disponibles
+        <span>Añade cursos para usar el generador</span>
+      </div>
+    `;
+    searchSchedulesBtn.disabled = true;
+    return;
+  }
+  
+  // Crear lista de cursos con checkboxes
+  const coursesHTML = courses.map(course => {
+    const isSelected = selectedCourseIds.includes(course.id);
+    return `
+      <div class="course-selection-item" data-course-id="${course.id}">
+        <div class="course-selection-checkbox ${isSelected ? 'checked' : ''}" 
+             data-course-id="${course.id}"></div>
+        <div class="course-selection-info">
+          <div class="course-selection-color" style="background-color: ${course.color}"></div>
+          <div class="course-selection-name">${escapeHTML(course.name)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  coursesSelection.innerHTML = coursesHTML;
+  
+  // Actualizar contadores
+  const selectedCount = selectedCourseIds.length;
+  selectedCoursesCount.textContent = selectedCount;
+  searchCount.textContent = selectedCount;
+  
+  // Habilitar/deshabilitar botón de búsqueda
+  searchSchedulesBtn.disabled = selectedCount === 0;
+  
+  // Actualizar resultados si los hay
+  if (scheduleCombinations.length > 0) {
+    generatorResults.style.display = 'block';
+    resultsCount.textContent = scheduleCombinations.length;
+    noResults.style.display = 'none';
+    
+    // Renderizar lista de resultados
+    const resultsHTML = scheduleCombinations.map((combination, index) => {
+      const isSelected = index === selectedCombinationIndex;
+      const courseCount = combination.courses.length;
+      const conflictCount = combination.hasConflict ? 1 : 0; // Siempre 0 por definición
+      
+      return `
+        <div class="result-option ${isSelected ? 'selected' : ''}" data-index="${index}">
+          <div class="result-option-radio"></div>
+          <div class="result-option-info">
+            <div class="result-option-title">Opción ${index + 1}</div>
+            <div class="result-option-details">
+              ${courseCount} curso${courseCount !== 1 ? 's' : ''}, 
+              <span>${conflictCount} conflicto${conflictCount !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    resultsList.innerHTML = resultsHTML;
+    resetViewBtn.style.display = 'block';
+    
+    // Añadir event listeners a los resultados
+    qsa('.result-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const index = parseInt(option.dataset.index);
+        applyScheduleCombination(index);
+      });
+    });
+  } else if (generatorResults.style.display === 'block') {
+    // Mostrar mensaje de no resultados
+    noResults.style.display = 'block';
+    noResultsCount.textContent = selectedCount;
+    resultsList.innerHTML = '';
+    resetViewBtn.style.display = 'block';
+  } else {
+    // Ocultar área de resultados
+    generatorResults.style.display = 'none';
+    resetViewBtn.style.display = 'none';
+  }
+  
+  // Añadir event listeners a los checkboxes
+  qsa('.course-selection-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const courseId = checkbox.dataset.courseId;
+      toggleCourseSelection(courseId);
+    });
+  });
+  
+  // También permitir clic en toda la fila
+  qsa('.course-selection-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('course-selection-checkbox')) {
+        const courseId = item.dataset.courseId;
+        toggleCourseSelection(courseId);
+      }
+    });
+  });
+}
+
+// Función para alternar selección de curso
+function toggleCourseSelection(courseId) {
+  const index = selectedCourseIds.indexOf(courseId);
+  
+  if (index === -1) {
+    // Añadir a seleccionados
+    selectedCourseIds.push(courseId);
+  } else {
+    // Remover de seleccionados
+    selectedCourseIds.splice(index, 1);
+  }
+  
+  // Limpiar resultados anteriores cuando se cambia la selección
+  clearGeneratorResults();
+  
+  // Actualizar UI
+  renderGeneratorUI();
+}
+
+// Función para limpiar resultados del generador
+function clearGeneratorResults() {
+  scheduleCombinations = [];
+  selectedCombinationIndex = -1;
+  generatorResults.style.display = 'none';
+  resetViewBtn.style.display = 'none';
+}
+
+// Función para generar todas las opciones posibles de un curso
+function generateCourseOptions(course) {
+  const options = [];
+  
+  // Verificar consistencia de labs en el curso
+  const hasLabs = course.theoryGroups.some(group => 
+    group.labGroups && group.labGroups.length > 0
+  );
+  
+  // Si algún grupo tiene labs, todos deben tener labs
+  if (hasLabs) {
+    const allGroupsHaveLabs = course.theoryGroups.every(group => 
+      group.labGroups && group.labGroups.length > 0
+    );
+    
+    if (!allGroupsHaveLabs) {
+      console.warn(`Curso "${course.name}" tiene inconsistencia en labs. Algunos grupos tienen labs y otros no.`);
+      return []; // No generamos opciones para cursos inconsistentes
+    }
+  }
+  
+  // Generar opciones para cada grupo de teoría
+  course.theoryGroups.forEach(group => {
+    if (hasLabs) {
+      // El curso tiene labs: cada grupo debe elegir un lab
+      if (group.labGroups && group.labGroups.length > 0) {
+        group.labGroups.forEach(lab => {
+          options.push({
+            courseId: course.id,
+            theoryGroup: group.code,
+            labGroup: lab.code,
+            sessions: [
+              ...(group.theorySessions || []),
+              ...(lab.sessions || [])
+            ]
+          });
+        });
+      }
+    } else {
+      // El curso no tiene labs: solo teoría
+      options.push({
+        courseId: course.id,
+        theoryGroup: group.code,
+        labGroup: null,
+        sessions: [...(group.theorySessions || [])]
+      });
+    }
+  });
+  
+  return options;
+}
+
+// Función para calcular el producto cartesiano de arrays
+function cartesianProduct(arrays) {
+  return arrays.reduce((acc, curr) => {
+    const result = [];
+    acc.forEach(a => {
+      curr.forEach(b => {
+        result.push([...a, b]);
+      });
+    });
+    return result;
+  }, [[]]);
+}
+
+// Función para verificar conflictos en una combinación
+function checkCombinationConflict(combination) {
+  const allSessions = [];
+  
+  // Recolectar todas las sesiones de la combinación
+  combination.forEach(option => {
+    option.sessions.forEach(session => {
+      allSessions.push({
+        courseId: option.courseId,
+        theoryGroup: option.theoryGroup,
+        labGroup: option.labGroup,
+        ...session,
+        startMin: toMinutes(session.start),
+        endMin: toMinutes(session.end)
+      });
+    });
+  });
+  
+  // Verificar conflictos entre todas las sesiones
+  for (let i = 0; i < allSessions.length; i++) {
+    for (let j = i + 1; j < allSessions.length; j++) {
+      const s1 = allSessions[i];
+      const s2 = allSessions[j];
+      
+      // Mismo día y se superponen
+      if (s1.day === s2.day && 
+          s1.startMin < s2.endMin && 
+          s2.startMin < s1.endMin) {
+        return true; // Hay conflicto
+      }
+    }
+  }
+  
+  return false; // No hay conflictos
+}
+
+// Función principal para encontrar combinaciones de horarios
+function findScheduleCombinations() {
+  // Limpiar resultados anteriores
+  clearGeneratorResults();
+  
+  // Obtener cursos seleccionados
+  const selectedCourses = courses.filter(course => 
+    selectedCourseIds.includes(course.id)
+  );
+  
+  if (selectedCourses.length === 0) {
+    alert('Selecciona al menos un curso para buscar horarios.');
+    return;
+  }
+  
+  // Generar opciones para cada curso
+  const courseOptions = selectedCourses.map(course => 
+    generateCourseOptions(course)
+  );
+  
+  // Verificar si algún curso no tiene opciones (inconsistencia en labs)
+  const invalidCourses = selectedCourses.filter((course, index) => 
+    courseOptions[index].length === 0
+  );
+  
+  if (invalidCourses.length > 0) {
+    alert(`Los siguientes cursos tienen inconsistencia en laboratorios (algunos grupos tienen labs y otros no):\n\n${
+      invalidCourses.map(c => c.name).join(', ')
+    }\n\nPor favor, edita estos cursos para que todos los grupos tengan labs o ninguno tenga.`);
+    return;
+  }
+  
+  // Calcular producto cartesiano (todas las combinaciones posibles)
+  const allCombinations = cartesianProduct(courseOptions);
+  
+  console.log(`Buscando entre ${allCombinations.length} combinaciones posibles...`);
+  
+  // Filtrar combinaciones sin conflictos
+  scheduleCombinations = allCombinations
+    .map(combination => ({
+      courses: combination,
+      hasConflict: checkCombinationConflict(combination)
+    }))
+    .filter(combination => !combination.hasConflict);
+  
+  console.log(`Encontradas ${scheduleCombinations.length} combinaciones sin conflictos.`);
+  
+  // Mostrar resultados
+  if (scheduleCombinations.length > 0) {
+    generatorResults.style.display = 'block';
+    // No seleccionar automáticamente ninguna opción
+    selectedCombinationIndex = -1;
+  } else {
+    // Mostrar mensaje de no resultados
+    generatorResults.style.display = 'block';
+    noResults.style.display = 'block';
+    noResultsCount.textContent = selectedCourses.length;
+  }
+  
+  renderGeneratorUI();
+}
+
+// Función para aplicar una combinación de horario
+function applyScheduleCombination(index) {
+  if (index < 0 || index >= scheduleCombinations.length) return;
+  
+  selectedCombinationIndex = index;
+  const combination = scheduleCombinations[index].courses;
+  
+  // Ocultar TODOS los grupos primero
+  courses.forEach(course => {
+    course.theoryGroups.forEach(group => {
+      // Ocultar grupo de teoría
+      setGroupVisibility(course.id, 'theory', group.code, false, false);
+      
+      // Ocultar laboratorios si los tiene
+      if (group.labGroups) {
+        group.labGroups.forEach(lab => {
+          setGroupVisibility(course.id, 'lab', lab.code, true, false);
+        });
+      }
+    });
+  });
+  
+  // Mostrar solo los grupos de la combinación seleccionada
+  combination.forEach(option => {
+    const course = courses.find(c => c.id === option.courseId);
+    if (!course) return;
+    
+    const theoryGroup = course.theoryGroups.find(g => g.code === option.theoryGroup);
+    if (!theoryGroup) return;
+    
+    // Mostrar grupo de teoría
+    setGroupVisibility(course.id, 'theory', option.theoryGroup, false, true);
+    
+    // Mostrar laboratorio si corresponde
+    if (option.labGroup) {
+      setGroupVisibility(course.id, 'lab', option.labGroup, true, true);
+    }
+  });
+  
+  // Actualizar la vista
+  renderSidebar();
+  renderCourses();
+  renderGeneratorUI();
+}
+
+// Función para restablecer la vista normal
+function resetScheduleView() {
+  // Limpiar selección en el generador
+  selectedCombinationIndex = -1;
+  
+  // Mostrar todos los grupos nuevamente
+  courses.forEach(course => {
+    course.theoryGroups.forEach(group => {
+      // Mostrar grupo de teoría
+      setGroupVisibility(course.id, 'theory', group.code, false, true);
+      
+      // Mostrar laboratorios si los tiene
+      if (group.labGroups) {
+        group.labGroups.forEach(lab => {
+          setGroupVisibility(course.id, 'lab', lab.code, true, true);
+        });
+      }
+    });
+  });
+  
+  // Actualizar la vista
+  renderSidebar();
+  renderCourses();
+  renderGeneratorUI();
+}
+
 // Event Listeners
 openModalBtn.addEventListener('click', () => openModal());
 closeModalBtn.addEventListener('click', closeModal);
@@ -983,6 +1410,9 @@ function init() {
   // Renderizar cursos existentes
   renderSidebar();
   renderCourses();
+  
+  // Inicializar generador de horarios
+  initScheduleGenerator();
 }
 
 // Ejecutar al cargar

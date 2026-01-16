@@ -126,6 +126,49 @@
           <div class="empty-state-sub">Añade tu primer curso para empezar</div>
         </div>
       </div>
+
+      <!-- NUEVA SECCIÓN: Generador de horarios -->
+      <div class="schedule-generator">
+        <div class="generator-header" id="generatorHeader">
+          <div class="generator-title">🔍 Generar horarios <span class="generator-arrow">▼</span></div>
+        </div>
+        
+        <div class="generator-content" id="generatorContent" style="display: none;">
+          <!-- Lista de cursos para seleccionar -->
+          <div class="courses-selection" id="coursesSelection">
+            <!-- Se llenará dinámicamente con checkboxes -->
+          </div>
+          
+          <div class="selected-count" id="selectedCount">
+            <span id="selectedCoursesCount">0</span> cursos seleccionados
+          </div>
+          
+          <button class="btn-generator-search" id="searchSchedulesBtn">
+            🔍 BUSCAR HORARIOS CON <span id="searchCount">0</span> CURSOS
+          </button>
+          
+          <!-- Área de resultados -->
+          <div class="generator-results" id="generatorResults" style="display: none;">
+            <div class="results-header">
+              <div class="results-title">RESULTADOS ENCONTRADOS: <span id="resultsCount">0</span></div>
+            </div>
+            
+            <div class="results-list" id="resultsList">
+              <!-- Se llenará dinámicamente con radio buttons -->
+            </div>
+            
+            <div class="no-results" id="noResults" style="display: none;">
+              No hay horarios sin conflictos con <span id="noResultsCount">0</span> cursos
+            </div>
+          </div>
+          
+          <!-- Botón restablecer vista -->
+          <button class="btn-generator-reset" id="resetViewBtn" style="display: none;">
+            🔄 Restablecer vista
+          </button>
+        </div>
+      </div>
+      <!-- FIN NUEVA SECCIÓN -->
     </div>
   </div>
 

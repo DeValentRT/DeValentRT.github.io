@@ -697,6 +697,319 @@ body {
   margin-top: 2px;
 }
 
+/* ============================= */
+/* GENERADOR DE HORARIOS (NUEVO) */
+/* ============================= */
+
+.schedule-generator {
+  border-top: 1px solid var(--grid);
+  background: #fcfcfc;
+}
+
+.generator-header {
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  border-bottom: 1px solid transparent;
+}
+
+.generator-header:hover {
+  background: #f5f5f5;
+}
+
+.generator-header.expanded {
+  border-bottom-color: var(--grid);
+  background: #f7f7f7;
+}
+
+.generator-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.generator-arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.generator-header.expanded .generator-arrow {
+  transform: rotate(180deg);
+}
+
+.generator-content {
+  padding: 16px 20px;
+  background: #fff;
+}
+
+/* Lista de cursos para seleccionar */
+.courses-selection {
+  margin-bottom: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.course-selection-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.course-selection-item:last-child {
+  border-bottom: none;
+}
+
+.course-selection-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.course-selection-checkbox.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.course-selection-checkbox.checked::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.course-selection-checkbox:hover {
+  border-color: var(--primary);
+}
+
+.course-selection-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.course-selection-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.course-selection-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.selected-count {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.selected-count span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Botón de búsqueda */
+.btn-generator-search {
+  width: 100%;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-generator-search:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-generator-search:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-generator-search:disabled:hover {
+  opacity: 1;
+  transform: none;
+}
+
+/* Área de resultados */
+.generator-results {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--grid);
+}
+
+.results-header {
+  margin-bottom: 12px;
+}
+
+.results-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.results-title span {
+  color: var(--primary);
+}
+
+.results-list {
+  margin-bottom: 16px;
+}
+
+.result-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.result-option:hover {
+  background: #f0f0f0;
+  border-color: #ddd;
+}
+
+.result-option.selected {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.result-option-radio {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.result-option.selected .result-option-radio {
+  border-color: var(--primary);
+}
+
+.result-option.selected .result-option-radio::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.result-option-info {
+  flex: 1;
+}
+
+.result-option-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.result-option-details {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.result-option-details span {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.no-results span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Botón restablecer vista */
+.btn-generator-reset {
+  width: 100%;
+  background: #f0f0f0;
+  color: var(--text);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-generator-reset:hover {
+  background: #e0e0e0;
+}
+
+/* Estado vacío del generador */
+.generator-empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.generator-empty-state span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .main-container {
@@ -710,6 +1023,10 @@ body {
   
   .courses-list {
     max-height: 300px;
+  }
+  
+  .courses-selection {
+    max-height: 150px;
   }
 }
 
@@ -764,5 +1081,17 @@ body {
   
   .course-group {
     padding: 10px 12px;
+  }
+  
+  .generator-header {
+    padding: 12px 16px;
+  }
+  
+  .generator-content {
+    padding: 12px 16px;
+  }
+  
+  .course-selection-item {
+    padding: 8px 0;
   }
 }
