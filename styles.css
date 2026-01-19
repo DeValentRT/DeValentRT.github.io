@@ -91,13 +91,16 @@ body {
   box-shadow: var(--shadow);
   overflow: hidden;
   border: 1px solid #eee;
+  overflow-x: auto; /* NUEVO: Scroll horizontal */
+  -webkit-overflow-scrolling: touch; /* Suave en móviles */
 }
 
 .schedule-header {
   display: grid;
-  grid-template-columns: 90px repeat(7, 1fr);
+  grid-template-columns: 90px repeat(5, 1fr); /* Cambiado de 7 a 5 */
   border-bottom: 1px solid var(--grid);
   background: #f7f7f7;
+  min-width: 800px; /* Ancho mínimo para scroll */
 }
 
 .schedule-header div {
@@ -109,8 +112,9 @@ body {
 
 .schedule-grid {
   display: grid;
-  grid-template-columns: 90px repeat(7, 1fr);
+  grid-template-columns: 90px repeat(5, 1fr); /* Cambiado de 7 a 5 */
   position: relative;
+  min-width: 800px; /* Ancho mínimo para scroll */
 }
 
 .time-col {
@@ -698,7 +702,7 @@ body {
 }
 
 /* ============================= */
-/* GENERADOR DE HORARIOS (NUEVO) */
+/*     GENERADOR DE HORARIOS     */
 /* ============================= */
 
 .schedule-generator {
@@ -1032,7 +1036,8 @@ body {
 
 @media (max-width: 900px) {
   .schedule-header, .schedule-grid { 
-    grid-template-columns: 60px repeat(7, 1fr); 
+    grid-template-columns: 60px repeat(5, minmax(100px, 1fr)); /* Cambiado a 5 */
+    min-width: 700px; /* Ajustado para 5 columnas */
   }
   .time-slot { 
     justify-content: center; 
@@ -1093,5 +1098,49 @@ body {
   
   .course-selection-item {
     padding: 8px 0;
+  }
+  
+  /* Mejoras para móvil */
+  .btn, .btn-sidebar, .btn-generator-search, .btn-generator-reset {
+    min-height: 44px; /* Tamaño mínimo para touch */
+    padding: 12px 16px;
+  }
+  
+  .course-item-header {
+    min-height: 48px; /* Más fácil de tocar */
+  }
+  
+  .course-selection-item {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    margin: 20px auto;
+    padding: 0 12px;
+    gap: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .schedule-header, .schedule-grid {
+    min-width: 600px; /* Más ajustado para móviles pequeños */
+  }
+  
+  .global-controls {
+    flex-direction: column;
+  }
+  
+  .btn-sidebar {
+    width: 100%;
   }
 }

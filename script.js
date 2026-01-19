@@ -254,8 +254,7 @@ function createEmptySessionHTML() {
         <option value="Miércoles">Miércoles</option>
         <option value="Jueves">Jueves</option>
         <option value="Viernes">Viernes</option>
-        <option value="Sábado">Sábado</option>
-        <option value="Domingo">Domingo</option>
+        <!-- Sábado y Domingo eliminados -->
       </select>
       <div class="time-inputs">
         <input type="time" class="input time-input" value="" min="08:00" max="22:00" step="300">
@@ -281,8 +280,7 @@ function createSessionHTML(session = null) {
         <option value="Miércoles" ${day === 'Miércoles' ? 'selected' : ''}>Miércoles</option>
         <option value="Jueves" ${day === 'Jueves' ? 'selected' : ''}>Jueves</option>
         <option value="Viernes" ${day === 'Viernes' ? 'selected' : ''}>Viernes</option>
-        <option value="Sábado" ${day === 'Sábado' ? 'selected' : ''}>Sábado</option>
-        <option value="Domingo" ${day === 'Domingo' ? 'selected' : ''}>Domingo</option>
+        <!-- Sábado y Domingo eliminados -->
       </select>
       <div class="time-inputs">
         <input type="time" class="input time-input" value="${start}" min="08:00" max="22:00" step="300">
@@ -297,7 +295,10 @@ function createSessionHTML(session = null) {
 function createLabGroupHTML(labGroup = null) {
   const labCode = labGroup ? labGroup.code : '90G';
   const labProfessor = labGroup ? labGroup.professor : '';
-  const sessions = labGroup ? labGroup.sessions : [null];
+  // MODIFICADO: Labs ahora solo tienen una sesión (no array)
+  const session = labGroup && labGroup.sessions && labGroup.sessions.length > 0 
+    ? labGroup.sessions[0] 
+    : null;
   
   return `
     <div class="lab-group">
@@ -319,12 +320,10 @@ function createLabGroupHTML(labGroup = null) {
       </div>
 
       <div class="lab-sessions">
-        ${sessions.map(session => createSessionHTML(session)).join('')}
+        ${createSessionHTML(session)}
       </div>
       
-      <button type="button" class="btn-add" data-type="lab-session">
-        + Añadir horario para este lab
-      </button>
+      <!-- MODIFICADO: Eliminado el botón "+ Añadir horario para este lab" -->
       
       <div class="lab-group-actions">
         <button type="button" class="btn-add" data-type="lab-group">
@@ -372,13 +371,7 @@ function setupGroupEventListeners(groupElement) {
 }
 
 function setupLabEventListeners(labGroupElement, parentGroupElement) {
-  // Añadir sesión de lab
-  const addLabSessionBtn = labGroupElement.querySelector('.btn-add[data-type="lab-session"]');
-  addLabSessionBtn.addEventListener('click', () => {
-    const labSessions = labGroupElement.querySelector('.lab-sessions');
-    labSessions.insertAdjacentHTML('beforeend', createEmptySessionHTML());
-    attachSessionEventListeners(parentGroupElement);
-  });
+  // MODIFICADO: Eliminada la función para añadir sesión de lab
   
   // Añadir otro grupo de lab
   const addLabGroupBtn = labGroupElement.querySelector('.btn-add[data-type="lab-group"]');
@@ -399,9 +392,20 @@ function attachSessionEventListeners(groupElement) {
       const sessionRow = e.target.closest('.session-row');
       const sessionsContainer = sessionRow.parentElement;
       
-      // Solo eliminar si hay más de una sesión
-      if (sessionsContainer.children.length > 1) {
+      // Solo eliminar si hay más de una sesión (para teoría) o es la única (para labs)
+      if (sessionsContainer.classList.contains('theory-sessions')) {
+        // Para teoría: solo eliminar si hay más de una
+        if (sessionsContainer.children.length > 1) {
+          sessionRow.remove();
+        }
+      } else {
+        // Para labs: siempre permitir eliminar (se recrea vacío si es necesario)
         sessionRow.remove();
+        // Si se eliminó la única sesión de un lab, crear una vacía
+        if (sessionsContainer.children.length === 0) {
+          sessionsContainer.insertAdjacentHTML('beforeend', createEmptySessionHTML());
+          attachSessionEventListeners(groupElement);
+        }
       }
     });
   });
@@ -433,7 +437,8 @@ function renderSidebar() {
       
       if (group.labGroups && group.labGroups.length > 0) {
         labGroupsHTML = group.labGroups.map(lab => {
-          const labSessionCount = lab.sessions ? lab.sessions.length : 0;
+          // MODIFICADO: Labs ahora tienen 1 sesión, no array
+          const labSessionCount = lab.sessions ? 1 : 0;
           const labVisible = isGroupVisible(course.id, 'lab', lab.code, true);
           
           labSessions += labSessionCount;
@@ -511,13 +516,15 @@ function renderTheoryGroupHTML(course, group, isVisible, visibleSessions, totalS
 }
 
 function renderLabGroupHTML(course, parentGroup, lab, isVisible) {
-  const sessionsHTML = (lab.sessions || []).map(session => `
+  // MODIFICADO: Labs ahora tienen 1 sesión, no array
+  const session = lab.sessions && lab.sessions.length > 0 ? lab.sessions[0] : null;
+  const sessionsHTML = session ? `
     <div class="session-item">
       <div class="session-day">${session.day}</div>
       <div class="session-time">${formatTimeRange(session.start, session.end)}</div>
     </div>
     ${lab.professor ? `<div class="session-professor">${escapeHTML(lab.professor)}</div>` : ''}
-  `).join('');
+  ` : '';
   
   return `
     <div class="course-group" data-course-id="${course.id}" data-group-code="${lab.code}" data-is-lab="true">
@@ -595,7 +602,8 @@ function updateSessionCounters() {
       
       if (group.labGroups && group.labGroups.length > 0) {
         group.labGroups.forEach(lab => {
-          const labSessionCount = lab.sessions ? lab.sessions.length : 0;
+          // MODIFICADO: Labs ahora tienen 1 sesión
+          const labSessionCount = lab.sessions ? 1 : 0;
           const labVisible = isGroupVisible(course.id, 'lab', lab.code, true);
           
           labSessions += labSessionCount;
@@ -640,7 +648,9 @@ function checkForConflicts() {
       if (group.labGroups) {
         group.labGroups.forEach(lab => {
           if (isGroupVisible(course.id, 'lab', lab.code, true)) {
-            (lab.sessions || []).forEach(session => {
+            // MODIFICADO: Labs ahora tienen 1 sesión
+            if (lab.sessions && lab.sessions.length > 0) {
+              const session = lab.sessions[0];
               visibleSessions.push({
                 courseId: course.id,
                 groupCode: lab.code,
@@ -651,7 +661,7 @@ function checkForConflicts() {
                 startMin: toMinutes(session.start),
                 endMin: toMinutes(session.end)
               });
-            });
+            }
           }
         });
       }
@@ -767,14 +777,16 @@ function renderCourse(course) {
         const isLabVisible = isGroupVisible(course.id, 'lab', labGroup.code, true);
         
         if (isLabVisible) {
-          labGroup.sessions.forEach(session => {
+          // MODIFICADO: Labs ahora tienen 1 sesión
+          if (labGroup.sessions && labGroup.sessions.length > 0) {
+            const session = labGroup.sessions[0];
             const dayCol = qsa('.day-col').find(col => col.dataset.day === session.day);
             if (!dayCol) return;
             
             const block = createCourseBlock(course, labGroup, session, labProfessor || groupProfessor, true);
             positionCourseBlock(block, session, ROW_HEIGHT, BASE_HOUR);
             dayCol.appendChild(block);
-          });
+          }
         }
       });
     }
@@ -870,29 +882,24 @@ function collectFormData() {
       const labCode = labContainer.querySelector('.lab-group-select').value;
       const labProfessor = labContainer.querySelector('.lab-professor-input').value.trim();
       
-      const labSessions = [];
-      const labRows = labContainer.querySelectorAll('.lab-sessions .session-row');
-      
-      for (const row of labRows) {
-        const day = row.querySelector('.select').value;
-        const start = row.querySelectorAll('.time-input')[0].value;
-        const end = row.querySelectorAll('.time-input')[1].value;
+      // MODIFICADO: Labs ahora tienen solo 1 sesión
+      const labRow = labContainer.querySelector('.lab-sessions .session-row');
+      if (labRow) {
+        const day = labRow.querySelector('.day-select').value;
+        const start = labRow.querySelectorAll('.time-input')[0].value;
+        const end = labRow.querySelectorAll('.time-input')[1].value;
         
         if (day && start && end && toMinutes(end) > toMinutes(start)) {
-          labSessions.push({ day, start, end });
+          labGroups.push({
+            code: labCode,
+            professor: labProfessor,
+            sessions: [{ day, start, end }] // Array con una sola sesión
+          });
         } else if (day || start || end) {
           // Si algún campo está parcialmente lleno, mostrar error
           alert(`Por favor, completa todos los campos del horario de laboratorio ${labCode}.`);
           return null;
         }
-      }
-      
-      if (labSessions.length > 0) {
-        labGroups.push({
-          code: labCode,
-          professor: labProfessor,
-          sessions: labSessions
-        });
       }
     }
     
@@ -992,9 +999,9 @@ function toggleGenerator() {
   } else {
     generatorContent.style.display = 'none';
     generatorHeader.classList.remove('expanded');
-    // Al colapsar: limpiar resultados y restablecer vista
-    clearGeneratorResults();
-    resetScheduleView();
+    // MODIFICADO: NO limpiar resultados al colapsar, solo ocultar UI
+    // clearGeneratorResults(); ← ELIMINADA ESTA LÍNEA
+    // resetScheduleView(); ← ELIMINADA ESTA LÍNEA
   }
   
   renderGeneratorUI();
@@ -1161,14 +1168,21 @@ function generateCourseOptions(course) {
       // El curso tiene labs: cada grupo debe elegir un lab
       if (group.labGroups && group.labGroups.length > 0) {
         group.labGroups.forEach(lab => {
+          // MODIFICADO: Labs ahora tienen 1 sesión
+          const labSession = lab.sessions && lab.sessions.length > 0 ? lab.sessions[0] : null;
+          const allSessions = [
+            ...(group.theorySessions || [])
+          ];
+          
+          if (labSession) {
+            allSessions.push(labSession);
+          }
+          
           options.push({
             courseId: course.id,
             theoryGroup: group.code,
             labGroup: lab.code,
-            sessions: [
-              ...(group.theorySessions || []),
-              ...(lab.sessions || [])
-            ]
+            sessions: allSessions
           });
         });
       }
@@ -1346,6 +1360,7 @@ function applyScheduleCombination(index) {
 function resetScheduleView() {
   // Limpiar selección en el generador
   selectedCombinationIndex = -1;
+  clearGeneratorResults();
   
   // Mostrar todos los grupos nuevamente
   courses.forEach(course => {
