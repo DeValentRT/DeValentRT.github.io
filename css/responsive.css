@@ -1,0 +1,128 @@
+/* Responsive */
+
+/* Espacio para que la grilla no quede tapada por la barra inferior fija */
+.main-container {
+  padding-bottom: 32px;
+}
+
+body {
+  padding-bottom: 60px; /* alto de .bottom-nav */
+}
+
+@media (max-width: 900px) {
+  .schedule-header, .schedule-grid { 
+    grid-template-columns: 60px repeat(5, minmax(100px, 1fr));
+    min-width: 700px;
+  }
+  .time-slot { 
+    justify-content: center; 
+    font-size: 11px;
+  }
+
+  .panel-overlay {
+    height: 72vh;
+  }
+}
+
+@media (max-width: 720px) {
+  .schedule-header div { 
+    font-size: 12px; 
+    padding: 8px 4px;
+  }
+  
+  .course { 
+    font-size: 11px; 
+    padding: 6px; 
+  }
+  
+  .session-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .time-inputs {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .time-inputs .input {
+    width: 45%;
+  }
+  
+  .modal {
+    max-height: 95vh;
+    margin: 0 10px;
+  }
+  
+  .course-item-header {
+    padding: 10px 12px;
+  }
+  
+  .course-group {
+    padding: 10px 12px;
+  }
+  
+  .course-selection-item {
+    padding: 8px 0;
+  }
+
+  .panel-body {
+    padding: 14px 16px 20px;
+  }
+
+  .nav-btn {
+    font-size: 12px;
+  }
+
+  .nav-btn-theme {
+    flex-basis: 60px;
+  }
+  
+  /* Mejoras para móvil: tamaño mínimo cómodo para tocar */
+  .btn, .btn-sidebar, .btn-generator-search, .btn-generator-reset, .nav-btn {
+    min-height: 44px;
+  }
+  
+  .course-item-header {
+    min-height: 48px;
+  }
+  
+  .course-selection-item {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    margin: 20px auto;
+    padding: 0 12px 32px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .schedule-header, .schedule-grid {
+    min-width: 600px;
+  }
+  
+  .global-controls {
+    flex-direction: column;
+  }
+  
+  .btn-sidebar {
+    width: 100%;
+  }
+
+  .panel-overlay {
+    height: 78vh;
+    border-radius: 14px 14px 0 0;
+  }
+}
