@@ -4,7 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Horario universitario</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/schedule.css">
+  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/generator.css">
+  <link rel="stylesheet" href="css/panel.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
   <div class="main-container">
@@ -83,78 +89,93 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Panel lateral de cursos -->
-    <div class="courses-sidebar" id="coursesSidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">📚 Mis Cursos</div>
-        <div class="sidebar-controls">
+  <!-- Panel deslizable: contenido de Mis cursos / Generar horarios / Horarios guardados -->
+  <div class="panel-overlay" id="panelOverlay">
+    <div class="panel-header">
+      <div class="panel-title" id="panelTitle">Mis cursos</div>
+      <button class="panel-close" id="panelClose" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- Sección: Mis cursos -->
+      <div class="panel-section" id="panel-courses" data-panel="courses">
+        <div class="panel-stats-row">
           <div class="courses-count">
-            <span id="visibleSessionsCount">0</span>/<span id="totalSessionsCount">0</span> sesiones
+            <span id="visibleSessionsCount">0</span>/<span id="totalSessionsCount">0</span> sesiones visibles
           </div>
           <div class="conflict-alert" id="conflictAlert" style="display: none;">
-            ⚠ <span id="conflictCount">0</span> conflicto(s)
+            <span id="conflictCount">0</span> conflicto(s)
           </div>
         </div>
-      </div>
-      
-      <div class="global-controls">
-        <button class="btn-sidebar" id="showAllBtn">Mostrar todos</button>
-        <button class="btn-sidebar" id="hideAllBtn">Ocultar todos</button>
-      </div>
-      
-      <div class="courses-list" id="coursesList">
-        <!-- Los cursos se insertarán aquí dinámicamente -->
-        <div class="empty-state" id="emptyState">
-          <div>No hay cursos aún</div>
-          <div class="empty-state-sub">Añade tu primer curso para empezar</div>
+
+        <div class="global-controls">
+          <button class="btn-sidebar" id="showAllBtn">Mostrar todos</button>
+          <button class="btn-sidebar" id="hideAllBtn">Ocultar todos</button>
+        </div>
+
+        <div class="courses-list" id="coursesList">
+          <div class="empty-state" id="emptyState">
+            <div>No hay cursos aún</div>
+            <div class="empty-state-sub">Añade tu primer curso para empezar</div>
+          </div>
         </div>
       </div>
 
-      <!-- NUEVA SECCIÓN: Generador de horarios -->
-      <div class="schedule-generator">
-        <div class="generator-header" id="generatorHeader">
-          <div class="generator-title">🔍 Generar horarios <span class="generator-arrow">▼</span></div>
+      <!-- Sección: Generar horarios -->
+      <div class="panel-section" id="panel-generator" data-panel="generator">
+        <div class="courses-selection" id="coursesSelection">
+          <!-- Se llenará dinámicamente con checkboxes -->
         </div>
-        
-        <div class="generator-content" id="generatorContent" style="display: none;">
-          <!-- Lista de cursos para seleccionar -->
-          <div class="courses-selection" id="coursesSelection">
-            <!-- Se llenará dinámicamente con checkboxes -->
+
+        <div class="selected-count" id="selectedCount">
+          <span id="selectedCoursesCount">0</span> cursos seleccionados
+        </div>
+
+        <button class="btn-generator-search" id="searchSchedulesBtn">
+          BUSCAR HORARIOS CON <span id="searchCount">0</span> CURSOS
+        </button>
+
+        <div class="generator-results" id="generatorResults" style="display: none;">
+          <div class="results-header">
+            <div class="results-title">RESULTADOS ENCONTRADOS: <span id="resultsCount">0</span></div>
           </div>
-          
-          <div class="selected-count" id="selectedCount">
-            <span id="selectedCoursesCount">0</span> cursos seleccionados
+
+          <div class="results-list" id="resultsList">
+            <!-- Se llenará dinámicamente con radio buttons -->
           </div>
-          
-          <button class="btn-generator-search" id="searchSchedulesBtn">
-            🔍 BUSCAR HORARIOS CON <span id="searchCount">0</span> CURSOS
-          </button>
-          
-          <!-- Área de resultados -->
-          <div class="generator-results" id="generatorResults" style="display: none;">
-            <div class="results-header">
-              <div class="results-title">RESULTADOS ENCONTRADOS: <span id="resultsCount">0</span></div>
-            </div>
-            
-            <div class="results-list" id="resultsList">
-              <!-- Se llenará dinámicamente con radio buttons -->
-            </div>
-            
-            <div class="no-results" id="noResults" style="display: none;">
-              No hay horarios sin conflictos con <span id="noResultsCount">0</span> cursos
-            </div>
+
+          <div class="no-results" id="noResults" style="display: none;">
+            No hay horarios sin conflictos con <span id="noResultsCount">0</span> cursos
           </div>
-          
-          <!-- Botón restablecer vista -->
-          <button class="btn-generator-reset" id="resetViewBtn" style="display: none;">
-            🔄 Restablecer vista
-          </button>
+        </div>
+
+        <button class="btn-generator-reset" id="resetViewBtn" style="display: none;">
+          Restablecer vista
+        </button>
+      </div>
+
+      <!-- Sección: Horarios guardados (próximamente) -->
+      <div class="panel-section" id="panel-saved" data-panel="saved">
+        <div class="generator-empty-state">
+          Próximamente vas a poder guardar hasta 5 horarios favoritos y volver a verlos cuando quieras.
         </div>
       </div>
-      <!-- FIN NUEVA SECCIÓN -->
+
     </div>
   </div>
+
+  <!-- Barra inferior de navegación -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-btn" data-panel="courses">Mis cursos</button>
+    <button class="nav-btn" data-panel="generator">Generar</button>
+    <button class="nav-btn" data-panel="saved">Guardados</button>
+    <button class="nav-btn nav-btn-theme" id="themeToggle" title="Modo oscuro (próximamente)">
+      Tema
+    </button>
+  </nav>
 
   <!-- Modal Añadir/Editar Curso -->
   <div class="modal-backdrop" id="modalBackdrop">
@@ -180,68 +201,7 @@
           <!-- Grupos horarios -->
           <div class="section-title">Grupos horarios</div>
           <div id="theoryGroupsContainer">
-            <!-- Grupo por defecto -->
-            <div class="group-container" data-group-index="0">
-              <div class="group-header">
-                <div class="group-title">Grupo Horario <span class="group-code-display">01Q</span></div>
-              </div>
-              
-              <div class="field">
-                <label class="label">Grupo de teoría</label>
-                <select class="select group-select" data-group-type="theory">
-                  <option value="01Q">01Q</option>
-                  <option value="02Q">02Q</option>
-                  <option value="03Q">03Q</option>
-                  <option value="04Q">04Q</option>
-                </select>
-              </div>
-
-              <!-- Profesor para este grupo -->
-              <div class="field">
-                <label class="label">Profesor de teoría (opcional)</label>
-                <input class="input professor-input" type="text" placeholder="Ej. Lic. Huamanizzz" />
-              </div>
-
-              <!-- Horarios de teoría -->
-              <div class="sessions-section">
-                <div class="section-label">Horarios de teoría</div>
-                <div class="theory-sessions">
-                  <!-- Sesión VACÍA por defecto -->
-                  <div class="session-row">
-                    <select class="select day-select">
-                      <option value="">Seleccionar día...</option>
-                      <option value="Lunes">Lunes</option>
-                      <option value="Martes">Martes</option>
-                      <option value="Miércoles">Miércoles</option>
-                      <option value="Jueves">Jueves</option>
-                      <option value="Viernes">Viernes</option>
-                      <!-- Sábado y Domingo eliminados -->
-                    </select>
-                    <div class="time-inputs">
-                      <input type="time" class="input time-input" value="" min="08:00" max="22:00" step="300">
-                      <span class="time-separator">-</span>
-                      <input type="time" class="input time-input" value="" min="08:30" max="22:00" step="300">
-                    </div>
-                    <button type="button" class="btn-remove" title="Eliminar">×</button>
-                  </div>
-                </div>
-                <button type="button" class="btn-add" data-type="theory-session">
-                  + Añadir horario de teoría
-                </button>
-              </div>
-
-              <!-- Laboratorios -->
-              <div class="labs-section">
-                <div class="section-label">Laboratorios (opcional)</div>
-                <button type="button" class="btn-add" data-type="toggle-labs">
-                  + Añadir laboratorios
-                </button>
-                
-                <div class="labs-container" style="display: none;">
-                  <!-- Contenedor vacío para laboratorios -->
-                </div>
-              </div>
-            </div>
+            <!-- Los grupos se insertan dinámicamente desde js/modal-form.js -->
           </div>
 
           <!-- Botón para añadir otro grupo horario -->
@@ -259,7 +219,15 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/conflicts.js"></script>
+  <script src="js/schedule-render.js"></script>
+  <script src="js/modal-form.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/panels.js"></script>
+  <script src="js/main.js"></script>
 
 </body>
 </html>
