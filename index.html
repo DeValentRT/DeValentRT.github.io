@@ -11,12 +11,16 @@
   <link rel="stylesheet" href="css/generator.css">
   <link rel="stylesheet" href="css/panel.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/theme-dark.css">
 </head>
 <body>
   <div class="main-container">
     <div class="container">
       <div class="header">
-        <div class="title">Horario</div>
+        <div class="title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Horario
+        </div>
         <button class="btn" id="openModal">+ Añadir curso</button>
       </div>
 
@@ -89,92 +93,116 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Panel deslizable: contenido de Mis cursos / Generar horarios / Horarios guardados -->
-  <div class="panel-overlay" id="panelOverlay">
-    <div class="panel-header">
-      <div class="panel-title" id="panelTitle">Mis cursos</div>
-      <button class="panel-close" id="panelClose" aria-label="Cerrar">×</button>
-    </div>
-
-    <div class="panel-body">
-
-      <!-- Sección: Mis cursos -->
-      <div class="panel-section" id="panel-courses" data-panel="courses">
-        <div class="panel-stats-row">
-          <div class="courses-count">
-            <span id="visibleSessionsCount">0</span>/<span id="totalSessionsCount">0</span> sesiones visibles
-          </div>
-          <div class="conflict-alert" id="conflictAlert" style="display: none;">
-            <span id="conflictCount">0</span> conflicto(s)
-          </div>
-        </div>
-
-        <div class="global-controls">
-          <button class="btn-sidebar" id="showAllBtn">Mostrar todos</button>
-          <button class="btn-sidebar" id="hideAllBtn">Ocultar todos</button>
-        </div>
-
-        <div class="courses-list" id="coursesList">
-          <div class="empty-state" id="emptyState">
-            <div>No hay cursos aún</div>
-            <div class="empty-state-sub">Añade tu primer curso para empezar</div>
-          </div>
-        </div>
+    <!-- Panel deslizable (móvil) / acoplado (escritorio): Mis cursos / Generar horarios / Horarios guardados -->
+    <div class="panel-overlay" id="panelOverlay">
+      <div class="panel-handle" id="panelHandle"></div>
+      <div class="panel-header">
+        <div class="panel-title" id="panelTitle">Mis cursos</div>
+        <button class="panel-close" id="panelClose" aria-label="Cerrar">×</button>
       </div>
 
-      <!-- Sección: Generar horarios -->
-      <div class="panel-section" id="panel-generator" data-panel="generator">
-        <div class="courses-selection" id="coursesSelection">
-          <!-- Se llenará dinámicamente con checkboxes -->
-        </div>
+      <div class="panel-body">
 
-        <div class="selected-count" id="selectedCount">
-          <span id="selectedCoursesCount">0</span> cursos seleccionados
-        </div>
-
-        <button class="btn-generator-search" id="searchSchedulesBtn">
-          BUSCAR HORARIOS CON <span id="searchCount">0</span> CURSOS
-        </button>
-
-        <div class="generator-results" id="generatorResults" style="display: none;">
-          <div class="results-header">
-            <div class="results-title">RESULTADOS ENCONTRADOS: <span id="resultsCount">0</span></div>
+        <!-- Sección: Mis cursos -->
+        <div class="panel-section" id="panel-courses" data-panel="courses">
+          <div class="stats-row" id="statsRow">
+            <div class="stat-chip" id="statChipCourses">
+              <span class="stat-icon"></span>
+              <span class="stat-text"><strong id="statCoursesValue">0</strong><span>Cursos</span></span>
+            </div>
+            <div class="stat-chip" id="statChipHours">
+              <span class="stat-icon"></span>
+              <span class="stat-text"><strong id="statHoursValue">0h</strong><span>Horas de clase</span></span>
+            </div>
+            <div class="stat-chip" id="statChipGaps">
+              <span class="stat-icon"></span>
+              <span class="stat-text"><strong id="statGapsValue">0h</strong><span>Huecos</span></span>
+            </div>
+            <button type="button" class="stat-chip stat-chip-conflict" id="statChipConflicts">
+              <span class="stat-icon"></span>
+              <span class="stat-text"><strong id="statConflictsValue">0</strong><span>Cruces</span></span>
+            </button>
           </div>
 
-          <div class="results-list" id="resultsList">
-            <!-- Se llenará dinámicamente con radio buttons -->
+          <div class="global-controls">
+            <button class="btn-sidebar" id="showAllBtn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              Mostrar todos
+            </button>
+            <button class="btn-sidebar" id="hideAllBtn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A11 11 0 0 1 12 19c-7 0-11-7-11-7a19.7 19.7 0 0 1 4.2-5.2"/><path d="M9.9 4.2A9.9 9.9 0 0 1 12 4c7 0 11 7 11 7a19.6 19.6 0 0 1-2.3 3.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              Ocultar todos
+            </button>
           </div>
 
-          <div class="no-results" id="noResults" style="display: none;">
-            No hay horarios sin conflictos con <span id="noResultsCount">0</span> cursos
+          <div class="courses-list" id="coursesList">
+            <div class="empty-state" id="emptyState">
+              <div>No hay cursos aún</div>
+              <div class="empty-state-sub">Añade tu primer curso para empezar</div>
+            </div>
           </div>
         </div>
 
-        <button class="btn-generator-reset" id="resetViewBtn" style="display: none;">
-          Restablecer vista
-        </button>
+        <!-- Sección: Generar horarios -->
+        <div class="panel-section" id="panel-generator" data-panel="generator">
+          <div class="courses-selection" id="coursesSelection">
+            <!-- Se llenará dinámicamente con checkboxes -->
+          </div>
+
+          <div class="selected-count" id="selectedCount">
+            <span id="selectedCoursesCount">0</span> cursos seleccionados
+          </div>
+
+          <button class="btn-generator-search" id="searchSchedulesBtn">
+            BUSCAR HORARIOS CON <span id="searchCount">0</span> CURSOS
+          </button>
+
+          <div class="generator-results" id="generatorResults" style="display: none;">
+            <div class="results-header">
+              <div class="results-title">RESULTADOS ENCONTRADOS: <span id="resultsCount">0</span></div>
+            </div>
+
+            <div class="results-list" id="resultsList">
+              <!-- Se llenará dinámicamente con radio buttons -->
+            </div>
+
+            <div class="no-results" id="noResults" style="display: none;">
+              No hay horarios sin conflictos con <span id="noResultsCount">0</span> cursos
+            </div>
+          </div>
+
+          <button class="btn-generator-reset" id="resetViewBtn" style="display: none;">
+            Restablecer vista
+          </button>
+        </div>
+
+        <!-- Sección: Horarios guardados (próximamente) -->
+        <div class="panel-section" id="panel-saved" data-panel="saved">
+          <div class="generator-empty-state">
+            Próximamente vas a poder guardar hasta 5 horarios favoritos y volver a verlos cuando quieras.
+          </div>
+        </div>
+
       </div>
-
-      <!-- Sección: Horarios guardados (próximamente) -->
-      <div class="panel-section" id="panel-saved" data-panel="saved">
-        <div class="generator-empty-state">
-          Próximamente vas a poder guardar hasta 5 horarios favoritos y volver a verlos cuando quieras.
-        </div>
-      </div>
-
     </div>
   </div>
 
   <!-- Barra inferior de navegación -->
   <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-btn" data-panel="courses">Mis cursos</button>
-    <button class="nav-btn" data-panel="generator">Generar</button>
-    <button class="nav-btn" data-panel="saved">Guardados</button>
-    <button class="nav-btn nav-btn-theme" id="themeToggle" title="Modo oscuro (próximamente)">
-      Tema
+    <button class="nav-btn" data-panel="courses">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span class="nav-label">Mis cursos</span>
     </button>
+    <button class="nav-btn" data-panel="generator">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h3.5c2 0 3 1.2 4 2.7"/><path d="M3 18h3.5c2 0 3-1.2 4-2.7"/><path d="M13 8.5C14.2 6.7 15.3 6 17.5 6H21"/><path d="M13 15.5c1.2 1.8 2.3 2.5 4.5 2.5H21"/><polyline points="18 3 21 6 18 9"/><polyline points="18 15 21 18 18 21"/></svg>
+      <span class="nav-label">Generar</span>
+    </button>
+    <button class="nav-btn" data-panel="saved">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4.2L6 21V3z"/></svg>
+      <span class="nav-label">Guardados</span>
+    </button>
+    <button class="nav-btn nav-btn-theme" id="themeToggle" title="Modo oscuro"></button>
   </nav>
 
   <!-- Modal Añadir/Editar Curso -->
@@ -219,14 +247,17 @@
     </div>
   </div>
 
+  <script src="js/icons.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/state.js"></script>
   <script src="js/conflicts.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/schedule-render.js"></script>
   <script src="js/modal-form.js"></script>
   <script src="js/sidebar.js"></script>
   <script src="js/generator.js"></script>
   <script src="js/panels.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/main.js"></script>
 
 </body>
