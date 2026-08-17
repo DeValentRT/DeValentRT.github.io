@@ -1,13 +1,11 @@
 // Detección y resaltado de conflictos entre sesiones visibles.
-// Depende de App.state y App.utils.
+// Solo calcula y marca los bloques en la grilla — la presentación del
+// conteo de conflictos (la tarjeta "cruces" del panel) vive en stats.js.
 
 window.App = window.App || {};
 
 (function (App) {
   const { toMinutes, qs, qsa } = App.utils;
-
-  const conflictAlert = document.getElementById('conflictAlert');
-  const conflictCount = document.getElementById('conflictCount');
 
   let highlightedConflicts = [];
 
@@ -73,13 +71,6 @@ window.App = window.App || {};
           });
         }
       }
-    }
-
-    if (conflicts.length > 0) {
-      conflictCount.textContent = conflicts.length;
-      conflictAlert.style.display = 'flex';
-    } else {
-      conflictAlert.style.display = 'none';
     }
 
     highlightedConflicts = conflicts;

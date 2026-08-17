@@ -83,11 +83,13 @@ window.App = window.App || {};
       addGroupContainer();
     }
 
+    App.utils.lockBodyScroll();
     modalBackdrop.style.display = 'flex';
   }
 
   function closeModal() {
     modalBackdrop.style.display = 'none';
+    App.utils.unlockBodyScroll();
   }
 
   // --- Colapsar / expandir tarjetas de grupo horario ---

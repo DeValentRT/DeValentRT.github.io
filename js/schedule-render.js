@@ -7,7 +7,7 @@
 window.App = window.App || {};
 
 (function (App) {
-  const { escapeHTML, qsa, toMinutes } = App.utils;
+  const { escapeHTML, qsa, toMinutes, hexToRgba } = App.utils;
 
   const ROW_HEIGHT = 60;
   const BASE_HOUR = 8;
@@ -64,13 +64,14 @@ window.App = window.App || {};
   function createCourseBlock(course, group, session, professor, isLab) {
     const block = document.createElement('div');
     block.className = 'course';
-    block.style.background = course.color;
+    block.style.borderLeftColor = course.color;
+    block.style.background = hexToRgba(course.color, 0.15);
     block.dataset.courseId = course.id;
 
     let content = `
-      <div class="group">${group.code}${isLab ? ' (Lab)' : ''}</div>
+      <div class="group">${group.code}${isLab ? ' · Lab' : ''}</div>
       <div class="name">${escapeHTML(course.name)}</div>
-      <div class="time">${session.start} - ${session.end}</div>
+      <div class="time">${App.icons.icon('clock')}${session.start} - ${session.end}</div>
     `;
 
     if (professor) {

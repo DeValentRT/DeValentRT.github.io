@@ -1,18 +1,18 @@
-// Panel lateral: lista de cursos, checkboxes de visibilidad, contadores
-// y botones "Mostrar/Ocultar todos". Depende de App.state, App.utils,
-// App.conflicts y App.scheduleRender; llama a App.generator.renderGeneratorUI
-// en tiempo de ejecución (no importa el orden de carga con generator.js).
+// Panel "Mis cursos": lista de cursos como tarjetas tipo catálogo.
+// Cada Grupo Horario / Laboratorio es su propia tarjeta, con un botón
+// +/- para activar o desactivar su visibilidad en la grilla — cuando
+// está visible, la tarjeta se resalta con el color del curso.
+// Depende de App.state, App.utils, App.conflicts, App.icons y App.stats;
+// llama a App.generator.renderGeneratorUI en tiempo de ejecución (no
+// importa el orden de carga con generator.js).
 
 window.App = window.App || {};
 
 (function (App) {
-  const { escapeHTML, formatTimeRange, qsa } = App.utils;
+  const { escapeHTML, formatTimeRange, qsa, hexToRgba } = App.utils;
 
   const coursesList = document.getElementById('coursesList');
   const emptyState = document.getElementById('emptyState');
-  const visibleSessionsCount = document.getElementById('visibleSessionsCount');
-  const totalSessionsCount = document.getElementById('totalSessionsCount');
-  const conflictAlert = document.getElementById('conflictAlert');
   const showAllBtn = document.getElementById('showAllBtn');
   const hideAllBtn = document.getElementById('hideAllBtn');
 
@@ -22,42 +22,22 @@ window.App = window.App || {};
     if (courses.length === 0) {
       emptyState.style.display = 'block';
       coursesList.innerHTML = '';
+      App.stats.updateStats();
       return;
     }
 
     emptyState.style.display = 'none';
 
-    let totalSessions = 0;
-    let visibleSessions = 0;
-
     const coursesHTML = courses.map(course => {
       const courseGroupsHTML = course.theoryGroups.map(group => {
-        const theorySessions = group.theorySessions || [];
         const theoryVisible = isGroupVisible(course.id, 'theory', group.code, false);
 
-        let labSessions = 0;
-        let visibleLabSessions = 0;
-        let labGroupsHTML = '';
+        const labGroupsHTML = (group.labGroups || []).map(lab => {
+          const labVisible = isGroupVisible(course.id, 'lab', lab.code, true);
+          return renderGroupCardHTML(course, lab, labVisible, true);
+        }).join('');
 
-        if (group.labGroups && group.labGroups.length > 0) {
-          labGroupsHTML = group.labGroups.map(lab => {
-            const labSessionCount = lab.sessions ? 1 : 0;
-            const labVisible = isGroupVisible(course.id, 'lab', lab.code, true);
-
-            labSessions += labSessionCount;
-            if (labVisible) visibleLabSessions += labSessionCount;
-
-            return renderLabGroupHTML(course, group, lab, labVisible);
-          }).join('');
-        }
-
-        const groupSessionCount = theorySessions.length + labSessions;
-        const groupVisibleSessions = (theoryVisible ? theorySessions.length : 0) + visibleLabSessions;
-
-        totalSessions += groupSessionCount;
-        visibleSessions += groupVisibleSessions;
-
-        return renderTheoryGroupHTML(course, group, theoryVisible, groupVisibleSessions, groupSessionCount, labGroupsHTML);
+        return renderGroupCardHTML(course, group, theoryVisible, false) + labGroupsHTML;
       }).join('');
 
       return `
@@ -65,7 +45,7 @@ window.App = window.App || {};
           <div class="course-item-header" data-course-id="${course.id}">
             <div class="course-color-dot" style="background-color: ${course.color}"></div>
             <div class="course-item-title">${escapeHTML(course.name)}</div>
-            <div class="course-item-arrow">▸</div>
+            <div class="course-item-arrow">›</div>
           </div>
           <div class="course-item-content">
             ${courseGroupsHTML}
@@ -76,62 +56,43 @@ window.App = window.App || {};
 
     coursesList.innerHTML = coursesHTML;
 
-    totalSessionsCount.textContent = totalSessions;
-    visibleSessionsCount.textContent = visibleSessions;
-
     setupSidebarEventListeners();
-    App.conflicts.checkForConflicts();
+    App.stats.updateStats();
     App.generator.renderGeneratorUI();
   }
 
-  function renderTheoryGroupHTML(course, group, isVisible, visibleSessions, totalSessions, labGroupsHTML) {
-    const sessionsHTML = (group.theorySessions || []).map(session => `
+  // Una tarjeta por Grupo Horario o por Grupo de Laboratorio. isLab
+  // distingue cuál de los dos es, para leer/guardar la visibilidad
+  // correcta y mostrar la etiqueta correspondiente.
+  function renderGroupCardHTML(course, group, isVisible, isLab) {
+    const sessions = isLab
+      ? (group.sessions || [])
+      : (group.theorySessions || []);
+
+    const sessionsHTML = sessions.map(session => `
       <div class="session-item">
         <div class="session-day">${session.day}</div>
         <div class="session-time">${formatTimeRange(session.start, session.end)}</div>
       </div>
-      ${group.professor ? `<div class="session-professor">${escapeHTML(group.professor)}</div>` : ''}
-    `).join('');
+    `).join('') + (group.professor ? `<div class="session-professor">${escapeHTML(group.professor)}</div>` : '');
+
+    const ringStyle = isVisible
+      ? `border-color:${course.color}; box-shadow:0 0 0 3px ${hexToRgba(course.color, 0.15)};`
+      : '';
 
     return `
-      <div class="course-group" data-course-id="${course.id}" data-group-code="${group.code}" data-is-lab="false">
+      <div class="course-group ${isVisible ? 'visible' : ''} ${isLab ? 'is-lab' : ''}" style="${ringStyle}"
+           data-course-id="${course.id}" data-group-code="${group.code}" data-is-lab="${isLab}">
         <div class="course-group-header">
-          <div class="course-group-type">Teoría</div>
-          <div class="course-group-code">${group.code}</div>
-          <div class="course-group-visibility ${isVisible ? 'visible' : ''}" 
-               data-course-id="${course.id}" 
-               data-group-code="${group.code}" 
-               data-is-lab="false">
+          <div class="course-group-badges">
+            <span class="course-group-type ${isLab ? 'lab' : ''}">${isLab ? 'Lab' : 'Teoría'}</span>
+            <span class="course-group-code">${group.code}</span>
           </div>
-        </div>
-        <div class="course-group-sessions">
-          ${sessionsHTML}
-        </div>
-        ${labGroupsHTML}
-      </div>
-    `;
-  }
-
-  function renderLabGroupHTML(course, parentGroup, lab, isVisible) {
-    const session = lab.sessions && lab.sessions.length > 0 ? lab.sessions[0] : null;
-    const sessionsHTML = session ? `
-      <div class="session-item">
-        <div class="session-day">${session.day}</div>
-        <div class="session-time">${formatTimeRange(session.start, session.end)}</div>
-      </div>
-      ${lab.professor ? `<div class="session-professor">${escapeHTML(lab.professor)}</div>` : ''}
-    ` : '';
-
-    return `
-      <div class="course-group" data-course-id="${course.id}" data-group-code="${lab.code}" data-is-lab="true">
-        <div class="course-group-header">
-          <div class="course-group-type lab">Lab</div>
-          <div class="course-group-code">${lab.code}</div>
-          <div class="course-group-visibility ${isVisible ? 'visible' : ''}" 
-               data-course-id="${course.id}" 
-               data-group-code="${lab.code}" 
-               data-is-lab="true">
-          </div>
+          <button type="button" class="course-group-toggle ${isVisible ? 'visible' : ''}"
+                  data-course-id="${course.id}" data-group-code="${group.code}" data-is-lab="${isLab}"
+                  title="${isVisible ? 'Ocultar' : 'Mostrar'}">
+            ${isVisible ? App.icons.icon('minus') : App.icons.icon('plus')}
+          </button>
         </div>
         <div class="course-group-sessions">
           ${sessionsHTML}
@@ -147,61 +108,35 @@ window.App = window.App || {};
       });
     });
 
-    qsa('.course-group-visibility').forEach(checkbox => {
-      checkbox.addEventListener('click', (e) => {
+    qsa('.course-group-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const courseId = checkbox.dataset.courseId;
-        const groupCode = checkbox.dataset.groupCode;
-        const isLab = checkbox.dataset.isLab === 'true';
+        const courseId = btn.dataset.courseId;
+        const groupCode = btn.dataset.groupCode;
+        const isLab = btn.dataset.isLab === 'true';
 
-        const currentlyVisible = checkbox.classList.contains('visible');
+        const currentlyVisible = btn.classList.contains('visible');
         const newVisibility = !currentlyVisible;
 
         App.state.setGroupVisibility(courseId, isLab ? 'lab' : 'theory', groupCode, isLab, newVisibility);
 
-        checkbox.classList.toggle('visible', newVisibility);
+        btn.classList.toggle('visible', newVisibility);
+        btn.innerHTML = newVisibility ? App.icons.icon('minus') : App.icons.icon('plus');
+        btn.title = newVisibility ? 'Ocultar' : 'Mostrar';
 
-        App.scheduleRender.renderCourses();
-        updateSessionCounters();
-        App.conflicts.checkForConflicts();
-      });
-    });
+        const groupCard = btn.closest('.course-group');
+        groupCard.classList.toggle('visible', newVisibility);
 
-    conflictAlert.addEventListener('click', () => {
-      App.conflicts.highlightConflicts();
-    });
-  }
-
-  function updateSessionCounters() {
-    const { courses, isGroupVisible } = App.state;
-    let totalSessions = 0;
-    let visibleSessions = 0;
-
-    courses.forEach(course => {
-      course.theoryGroups.forEach(group => {
-        const theorySessions = group.theorySessions || [];
-        const theoryVisible = isGroupVisible(course.id, 'theory', group.code, false);
-
-        let labSessions = 0;
-        let visibleLabSessions = 0;
-
-        if (group.labGroups && group.labGroups.length > 0) {
-          group.labGroups.forEach(lab => {
-            const labSessionCount = lab.sessions ? 1 : 0;
-            const labVisible = isGroupVisible(course.id, 'lab', lab.code, true);
-
-            labSessions += labSessionCount;
-            if (labVisible) visibleLabSessions += labSessionCount;
-          });
+        const course = App.state.courses.find(c => c.id === courseId);
+        if (course) {
+          groupCard.style.borderColor = newVisibility ? course.color : '';
+          groupCard.style.boxShadow = newVisibility ? `0 0 0 3px ${hexToRgba(course.color, 0.15)}` : '';
         }
 
-        totalSessions += theorySessions.length + labSessions;
-        visibleSessions += (theoryVisible ? theorySessions.length : 0) + visibleLabSessions;
+        App.scheduleRender.renderCourses();
+        App.stats.updateStats();
       });
     });
-
-    totalSessionsCount.textContent = totalSessions;
-    visibleSessionsCount.textContent = visibleSessions;
   }
 
   function showAllGroups() {
@@ -219,5 +154,5 @@ window.App = window.App || {};
   showAllBtn.addEventListener('click', showAllGroups);
   hideAllBtn.addEventListener('click', hideAllGroups);
 
-  App.sidebar = { renderSidebar, updateSessionCounters, showAllGroups, hideAllGroups };
+  App.sidebar = { renderSidebar, showAllGroups, hideAllGroups };
 })(window.App);
