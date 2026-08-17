@@ -1,22 +1,35 @@
 :root {
-  --bg: #f4f5f7;
-  --grid: #e5e7eb;
-  --text: #1f2430;
-  --muted: #6b7280;
+  --bg: #f6f4f1;
+  --grid: #e8e3db;
+  --border-strong: #d9d3c8;
+  --text: #24211c;
+  --muted: #79736a;
   --primary: #4338ca;
   --primary-hover: #372ea8;
+  --accent-warm: #c2661a;
   --danger: #dc2626;
-  --warning: #d97706;
+  --warning: #c2661a;
   --success: #10b981;
   --white: #fff;
+  --surface-alt: #f7f5f2;
+  --surface-hover: #eee9e2;
   --sidebar-bg: #fff;
-  --shadow: 0 4px 16px rgba(17, 24, 39, .06);
-  --shadow-lg: 0 12px 32px rgba(17, 24, 39, .10);
+  --shadow: 0 4px 16px rgba(36, 33, 28, .07);
+  --shadow-lg: 0 12px 32px rgba(36, 33, 28, .12);
   --radius: 14px;
   --radius-sm: 10px;
 }
 
 * { box-sizing: border-box; }
+
+/* Los navegadores NO heredan color/fuente en controles de formulario
+   por defecto (input, select, button, textarea) — sin esto, esos
+   campos se quedan con el negro por defecto del navegador sin importar
+   el tema activo, ilegible en modo oscuro. */
+input, select, textarea, button {
+  font-family: inherit;
+  color: inherit;
+}
 
 body {
   margin: 0;
@@ -24,6 +37,10 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }
 
 .main-container {
@@ -43,11 +60,20 @@ body {
   margin-bottom: 18px;
 }
 
+.icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .title {
   font-weight: 700;
   font-size: 26px;
   letter-spacing: -0.02em;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn {
@@ -70,7 +96,7 @@ body {
 }
 
 .btn-secondary {
-  background: #eef0f2;
+  background: var(--surface-alt);
   color: var(--text);
   border: none;
   border-radius: var(--radius-sm);
@@ -82,7 +108,7 @@ body {
 }
 
 .btn-secondary:hover {
-  background: #e2e4e8;
+  background: var(--surface-hover);
 }
 
 .btn-danger {

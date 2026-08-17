@@ -1,0 +1,31 @@
+/* Modo oscuro: redefine las mismas variables que usa todo el resto del
+   CSS, así que activar [data-theme="dark"] en <html> re-skinnea toda
+   la app sin tocar ningún otro archivo. El texto blanco fijo de los
+   bloques de curso (schedule.css) no depende de estas variables a
+   propósito, para seguir siendo legible sobre cualquier color de curso. */
+
+[data-theme="dark"] {
+  --bg: #121317;
+  --grid: #2c2e35;
+  --border-strong: #3a3d46;
+  --text: #eceef2;
+  --muted: #9a9da6;
+  --primary: #7c6ff2;
+  --primary-hover: #8f84f5;
+  --accent-warm: #e2953f;
+  --danger: #f87171;
+  --warning: #e2953f;
+  --success: #34d399;
+  --white: #1b1d23;
+  --surface-alt: #22242b;
+  --surface-hover: #2a2d35;
+  --sidebar-bg: #1b1d23;
+  --shadow: 0 4px 16px rgba(0, 0, 0, .35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .45);
+}
+
+/* El fondo de la página del modal (semitransparente) necesita un poco
+   más de opacidad en oscuro para separar bien del contenido de detrás. */
+[data-theme="dark"] .modal-backdrop {
+  background: rgba(0, 0, 0, .55);
+}

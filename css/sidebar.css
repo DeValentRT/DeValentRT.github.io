@@ -1,28 +1,4 @@
 /* Contenido del panel "Mis cursos" */
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.courses-count span:first-child {
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.conflict-alert {
-  font-size: 12px;
-  color: var(--warning);
-  background: rgba(217, 119, 6, 0.1);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.conflict-alert:hover {
-  background: rgba(217, 119, 6, 0.2);
-}
 
 .global-controls {
   display: flex;
@@ -32,7 +8,11 @@
 
 .btn-sidebar {
   flex: 1;
-  background: #f0f0f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface-alt);
   border: none;
   border-radius: 8px;
   padding: 9px 12px;
@@ -43,8 +23,13 @@
   text-align: center;
 }
 
+.btn-sidebar .icon {
+  width: 15px;
+  height: 15px;
+}
+
 .btn-sidebar:hover {
-  background: #e4e4e8;
+  background: var(--surface-hover);
 }
 
 .btn-sidebar:first-child {
@@ -75,8 +60,8 @@
 /* Estilos para los items de curso */
 .course-item {
   margin-bottom: 16px;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  border: 1px solid var(--grid);
+  border-radius: 10px;
   overflow: hidden;
 }
 
@@ -85,19 +70,19 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #eee;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--grid);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s;
 }
 
 .course-item-header:hover {
-  background: #f0f0f0;
+  background: var(--surface-hover);
 }
 
 .course-item-header.expanded {
-  border-bottom-color: #ddd;
+  border-bottom-color: var(--grid);
 }
 
 .course-color-dot {
@@ -115,7 +100,7 @@
 
 .course-item-arrow {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   transition: transform 0.2s;
 }
 
@@ -124,34 +109,42 @@
 }
 
 .course-item-content {
-  background: #fff;
+  background: var(--white);
   display: none;
+  padding: 10px;
 }
 
 .course-item-header.expanded + .course-item-content {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Grupos dentro del curso */
+/* --- Tarjeta de Grupo Horario / Laboratorio, estilo catálogo --- */
 .course-group {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: all 0.2s;
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
-.course-group:last-child {
-  border-bottom: none;
-}
-
-.course-group:hover {
-  background: #fafafa;
+.course-group.is-lab {
+  margin-left: 12px;
+  background: var(--surface-alt);
 }
 
 .course-group-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
+}
+
+.course-group-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .course-group-type {
@@ -161,50 +154,58 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .course-group-type.lab {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(194, 102, 26, 0.1);
   color: var(--warning);
 }
 
 .course-group-code {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  flex: 1;
 }
 
-.course-group-visibility {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
+/* Botón +/- para activar o desactivar el grupo en la grilla */
+.course-group-toggle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--grid);
+  background: var(--white);
+  color: var(--muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   flex-shrink: 0;
+  transition: all 0.2s;
 }
 
-.course-group-visibility.visible {
-  background: var(--primary);
+.course-group-toggle .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.course-group-toggle:hover {
   border-color: var(--primary);
+  color: var(--primary);
 }
 
-.course-group-visibility.visible::after {
-  content: '✓';
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+.course-group-toggle.visible {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
 }
 
-.course-group-visibility:hover {
-  border-color: var(--primary);
+.course-group-toggle.visible:hover {
+  opacity: 0.85;
 }
 
 .course-group-sessions {
-  padding-left: 28px;
+  padding-left: 2px;
 }
 
 .session-item {
@@ -213,7 +214,7 @@
   gap: 8px;
   font-size: 12px;
   color: var(--muted);
-  padding: 4px 0;
+  padding: 3px 0;
 }
 
 .session-day {
@@ -227,7 +228,7 @@
 
 .session-professor {
   font-size: 11px;
-  color: #999;
+  color: var(--muted);
   font-style: italic;
-  margin-top: 2px;
+  margin-top: 4px;
 }

@@ -53,7 +53,7 @@
   display: flex; 
   justify-content: flex-end; 
   gap: 10px;
-  background: #fafafa;
+  background: var(--surface-alt);
   flex-shrink: 0;
 }
 
@@ -72,9 +72,9 @@
 .input, .select {
   width: 100%; 
   padding: 9px 12px; 
-  border: 1px solid #ddd;
+  border: 1px solid var(--grid);
   border-radius: 8px; 
-  background: #fff; 
+  background: var(--white); 
   font-size: 14px;
   transition: border-color 0.2s;
 }
@@ -96,8 +96,8 @@
 /* --- Grupo Horario: tarjeta colapsable con acento de color --- */
 
 .group-container {
-  background: #fafafa;
-  border: 1px solid #ececf0;
+  background: var(--surface-alt);
+  border: 1px solid var(--grid);
   border-left: 3px solid var(--primary);
   border-radius: 10px;
   margin-bottom: 12px;
@@ -195,8 +195,8 @@
   display: flex;
   gap: 6px;
   align-items: center;
-  background: #fff;
-  border: 1px solid #ececf0;
+  background: var(--white);
+  border: 1px solid var(--grid);
   border-radius: 8px;
   padding: 6px 6px 6px 10px;
   margin-bottom: 8px;
@@ -250,7 +250,7 @@
 /* Buttons add */
 .btn-add {
   background: none;
-  border: 1px dashed #d8d8dd;
+  border: 1px dashed var(--border-strong);
   color: var(--muted);
   padding: 8px 12px;
   border-radius: 8px;
@@ -269,8 +269,8 @@
 }
 
 .btn-add-group {
-  background: #f0f0f2;
-  border: 1px dashed #ccc;
+  background: var(--surface-alt);
+  border: 1px dashed var(--border-strong);
   color: var(--text);
   padding: 12px;
   border-radius: 8px;
@@ -284,7 +284,7 @@
 }
 
 .btn-add-group:hover {
-  background: #e8e8ec;
+  background: var(--surface-hover);
   border-color: var(--primary);
   color: var(--primary);
 }
@@ -302,20 +302,20 @@
 
 .btn-add-lab-group {
   margin-top: 10px;
-  border-color: rgba(217, 119, 6, 0.35);
+  border-color: rgba(194, 102, 26, 0.35);
   color: var(--warning);
 }
 
 .btn-add-lab-group:hover {
   border-color: var(--warning);
   color: var(--warning);
-  background: rgba(217, 119, 6, 0.06);
+  background: rgba(194, 102, 26, 0.06);
 }
 
 /* --- Grupo de Laboratorio: acento ámbar para diferenciarlo de la teoría --- */
 .lab-group {
-  background: #fff;
-  border: 1px solid #ececf0;
+  background: var(--white);
+  border: 1px solid var(--grid);
   border-left: 3px solid var(--warning);
   border-radius: 8px;
   padding: 14px;

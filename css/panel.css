@@ -18,19 +18,29 @@
 
 .nav-btn {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--muted);
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
 
+.nav-btn .icon {
+  width: 19px;
+  height: 19px;
+}
+
 .nav-btn:hover {
   color: var(--text);
-  background: #fafafb;
+  background: var(--surface-alt);
 }
 
 .nav-btn.active {
@@ -39,11 +49,20 @@
 }
 
 .nav-btn-theme {
-  flex: 0 0 72px;
+  flex: 0 0 60px;
   border-left: 1px solid var(--grid);
 }
 
-/* Panel deslizable */
+.nav-btn-theme .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-btn-theme.active {
+  color: var(--accent-warm);
+}
+
+/* Panel deslizable (móvil por defecto) */
 .panel-overlay {
   position: fixed;
   left: 0;
@@ -65,6 +84,16 @@
 
 .panel-overlay.open {
   transform: translateY(0);
+}
+
+.panel-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--grid);
+  border-radius: 4px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+  cursor: grab;
 }
 
 .panel-header {
@@ -95,7 +124,7 @@
 }
 
 .panel-close:hover {
-  background: #f0f0f2;
+  background: var(--surface-alt);
 }
 
 .panel-body {
@@ -112,9 +141,129 @@
   display: block;
 }
 
-.panel-stats-row {
+/* --- Tarjetas de estadísticas ("Mis cursos") --- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stat-chip {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+  gap: 8px;
+  background: var(--surface-alt);
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  text-align: left;
+}
+
+button.stat-chip {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button.stat-chip:hover {
+  background: var(--surface-hover);
+}
+
+.stat-chip .stat-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(67, 56, 202, 0.10);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.stat-chip .stat-icon .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.stat-chip .stat-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.stat-chip .stat-text strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-chip .stat-text span {
+  font-size: 10.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-chip-conflict.has-conflicts {
+  border-color: rgba(194, 102, 26, .35);
+  background: rgba(194, 102, 26, .08);
+}
+
+.stat-chip-conflict.has-conflicts .stat-icon {
+  background: rgba(194, 102, 26, .18);
+  color: var(--accent-warm);
+}
+
+/* ============================= */
+/*  ESCRITORIO: PANEL ACOPLADO   */
+/* ============================= */
+@media (min-width: 1000px) {
+  .main-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .panel-overlay {
+    position: sticky;
+    top: 36px;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    height: calc(100vh - 92px);
+    max-height: none;
+    min-height: 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    transform: none;
+    width: 0;
+    opacity: 0;
+    transition: width 0.25s ease, opacity 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .panel-overlay.open {
+    width: 360px;
+    opacity: 1;
+  }
+
+  .panel-header,
+  .panel-body {
+    width: 360px;
+  }
+
+  .panel-handle {
+    display: none;
+  }
 }
