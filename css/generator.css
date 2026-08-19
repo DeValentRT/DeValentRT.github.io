@@ -264,3 +264,89 @@
   font-size: 12px;
   opacity: 0.7;
 }
+
+/* --- Estrella para guardar un resultado generado --- */
+.result-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.result-star .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.result-star:hover {
+  color: var(--accent-warm);
+}
+
+.result-star.saved {
+  color: var(--accent-warm);
+}
+
+.result-star.saved .icon {
+  fill: currentColor;
+}
+
+/* --- Horarios guardados --- */
+.saved-schedules-header {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.saved-schedule-card {
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: var(--surface-alt);
+}
+
+.saved-schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.saved-schedule-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.saved-schedule-delete {
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.saved-schedule-delete:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+}
+
+.saved-schedule-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
