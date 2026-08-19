@@ -125,6 +125,14 @@
             </button>
           </div>
 
+          <div class="active-now-card">
+            <div class="active-now-header">
+              <div class="active-now-title">Activo ahora</div>
+              <button type="button" class="result-star active-now-save" id="activeNowSaveBtn" title="Guardar este horario"></button>
+            </div>
+            <div class="active-now-list" id="activeNowCourses"></div>
+          </div>
+
           <div class="global-controls">
             <button class="btn-sidebar" id="showAllBtn">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -146,6 +154,14 @@
 
         <!-- Sección: Generar horarios -->
         <div class="panel-section" id="panel-generator" data-panel="generator">
+          <p class="panel-intro-text">Selecciona los cursos que quieres llevar y busca combinaciones de horario sin cruces entre ellos.</p>
+
+          <div class="stat-chip stat-chip-conflict incompatible-chip" id="incompatibleChip">
+            <span class="stat-icon"></span>
+            <span class="stat-text"><strong id="incompatibleCount">0</strong><span>Cursos que siempre chocan</span></span>
+          </div>
+          <ul class="incompatible-list" id="incompatibleList" style="display: none;"></ul>
+
           <div class="courses-selection" id="coursesSelection">
             <!-- Se llenará dinámicamente con checkboxes -->
           </div>
@@ -177,10 +193,18 @@
           </button>
         </div>
 
-        <!-- Sección: Horarios guardados (próximamente) -->
+        <!-- Sección: Horarios guardados -->
         <div class="panel-section" id="panel-saved" data-panel="saved">
-          <div class="generator-empty-state">
-            Próximamente vas a poder guardar hasta 5 horarios favoritos y volver a verlos cuando quieras.
+          <p class="panel-intro-text">Guarda hasta 5 combinaciones de horario para volver a verlas cuando quieras.</p>
+
+          <div class="saved-schedules-header">
+            <span id="savedSchedulesCount">0</span>/5 horarios guardados
+          </div>
+
+          <div id="savedSchedulesList"></div>
+
+          <div class="generator-empty-state" id="savedSchedulesEmpty">
+            Aún no guardaste ningún horario. Ve a "Generar", busca combinaciones, y toca la estrella de la que quieras guardar.
           </div>
         </div>
 
@@ -256,6 +280,7 @@
   <script src="js/modal-form.js"></script>
   <script src="js/sidebar.js"></script>
   <script src="js/generator.js"></script>
+  <script src="js/saved-schedules.js"></script>
   <script src="js/panels.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/main.js"></script>
