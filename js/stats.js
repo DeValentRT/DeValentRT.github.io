@@ -7,7 +7,7 @@
 window.App = window.App || {};
 
 (function (App) {
-  const { toMinutes } = App.utils;
+  const { toMinutes, escapeHTML } = App.utils;
 
   const statCoursesValue = document.getElementById('statCoursesValue');
   const statHoursValue = document.getElementById('statHoursValue');
@@ -84,6 +84,103 @@ window.App = window.App || {};
     statConflictsValue.textContent = conflicts.length;
 
     statChipConflicts.classList.toggle('has-conflicts', conflicts.length > 0);
+
+    renderActiveNow();
+  }
+
+  // --- "Activo ahora": lo que está visible en la grilla en este
+  // momento, sin importar cómo se activó (a mano en "Mis cursos" o
+  // aplicando una opción del generador). Se muestra igual en ambas
+  // pestañas porque es la misma fuente de datos.
+
+  function computeActiveNow() {
+    const { courses, isGroupVisible } = App.state;
+    const items = [];
+
+    courses.forEach(course => {
+      course.theoryGroups.forEach(group => {
+        if (isGroupVisible(course.id, 'theory', group.code, false)) {
+          items.push({ name: course.name, code: group.code, color: course.color });
+        }
+        (group.labGroups || []).forEach(lab => {
+          if (isGroupVisible(course.id, 'lab', lab.code, true)) {
+            items.push({ name: course.name, code: `${group.code}/${lab.code}`, color: course.color });
+          }
+        });
+      });
+    });
+
+    return items;
+  }
+
+  function renderActiveNowInto(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const items = computeActiveNow();
+
+    if (items.length === 0) {
+      container.innerHTML = '<div class="active-now-empty">Nada activo todavía.</div>';
+      return;
+    }
+
+    container.innerHTML = items.map(item => `
+      <div class="active-now-item">
+        <span class="active-now-dot" style="background:${item.color}"></span>
+        <span class="active-now-name">${escapeHTML(item.name)}</span>
+        <span class="active-now-code">${item.code}</span>
+      </div>
+    `).join('');
+  }
+
+  function renderActiveNow() {
+    renderActiveNowInto('activeNowCourses');
+    updateActiveNowSaveStar();
+  }
+
+  // --- Estrella en "Activo ahora" (Mis cursos): guarda lo que tengas
+  // armado a mano en este momento, igual que la estrella de un
+  // resultado del generador — misma función compartida en saved-schedules.js.
+
+  const activeNowSaveBtn = document.getElementById('activeNowSaveBtn');
+
+  function getCurrentCombination() {
+    const { courses, isGroupVisible } = App.state;
+    const combination = [];
+
+    courses.forEach(course => {
+      course.theoryGroups.forEach(group => {
+        if (isGroupVisible(course.id, 'theory', group.code, false)) {
+          const visibleLab = (group.labGroups || []).find(lab =>
+            isGroupVisible(course.id, 'lab', lab.code, true)
+          );
+          combination.push({
+            courseId: course.id,
+            theoryGroup: group.code,
+            labGroup: visibleLab ? visibleLab.code : null
+          });
+        }
+      });
+    });
+
+    return combination;
+  }
+
+  function updateActiveNowSaveStar() {
+    if (!activeNowSaveBtn || !App.savedSchedules) return;
+    const combination = getCurrentCombination();
+    const isSaved = combination.length > 0 && App.savedSchedules.isCombinationSaved(combination);
+    activeNowSaveBtn.classList.toggle('saved', isSaved);
+    activeNowSaveBtn.title = isSaved ? 'Ya guardado — toca para quitarlo' : 'Guardar este horario';
+  }
+
+  if (activeNowSaveBtn) {
+    activeNowSaveBtn.innerHTML = App.icons.icon('star');
+    activeNowSaveBtn.addEventListener('click', () => {
+      if (App.savedSchedules) {
+        App.savedSchedules.toggleSaveCombination(getCurrentCombination(), activeNowSaveBtn);
+      }
+    });
   }
 
   function initStatsIcons() {

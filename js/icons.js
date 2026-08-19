@@ -33,7 +33,9 @@ window.App = window.App || {};
 
     plus: `<svg class="icon" ${ATTR}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
 
-    minus: `<svg class="icon" ${ATTR}><line x1="5" y1="12" x2="19" y2="12"/></svg>`
+    minus: `<svg class="icon" ${ATTR}><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+
+    star: `<svg class="icon" ${ATTR}><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 17 5.5 21 7.5 13.5 2 9 9 9"/></svg>`
   };
 
   function icon(name) {

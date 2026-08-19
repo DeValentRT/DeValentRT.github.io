@@ -17,10 +17,15 @@ window.App = window.App || {};
   const noResults = document.getElementById('noResults');
   const noResultsCount = document.getElementById('noResultsCount');
   const resetViewBtn = document.getElementById('resetViewBtn');
+  const incompatibleCount = document.getElementById('incompatibleCount');
+  const incompatibleList = document.getElementById('incompatibleList');
+  const incompatibleChip = document.getElementById('incompatibleChip');
 
   let selectedCourseIds = [];
   let scheduleCombinations = [];
   let selectedCombinationIndex = -1;
+
+  incompatibleChip.querySelector('.stat-icon').innerHTML = App.icons.icon('alert-triangle');
 
   function initScheduleGenerator() {
     selectedCourseIds = App.state.courses.map(course => course.id);
@@ -33,6 +38,8 @@ window.App = window.App || {};
 
   function renderGeneratorUI() {
     const { courses } = App.state;
+
+    renderIncompatiblePairs();
 
     if (courses.length === 0) {
       coursesSelection.innerHTML = `
@@ -76,6 +83,7 @@ window.App = window.App || {};
         const isSelected = index === selectedCombinationIndex;
         const courseCount = combination.courses.length;
         const conflictCount = combination.hasConflict ? 1 : 0;
+        const isSaved = App.state.findSavedScheduleIndex(combination.courses) !== -1;
 
         return `
           <div class="result-option ${isSelected ? 'selected' : ''}" data-index="${index}">
@@ -87,6 +95,10 @@ window.App = window.App || {};
                 <span>${conflictCount} conflicto${conflictCount !== 1 ? 's' : ''}</span>
               </div>
             </div>
+            <button type="button" class="result-star ${isSaved ? 'saved' : ''}" data-index="${index}"
+                    title="${isSaved ? 'Ya guardado — toca para quitarlo' : 'Guardar este horario'}">
+              ${App.icons.icon('star')}
+            </button>
           </div>
         `;
       }).join('');
@@ -98,6 +110,14 @@ window.App = window.App || {};
         option.addEventListener('click', () => {
           const index = parseInt(option.dataset.index);
           applyScheduleCombination(index);
+        });
+      });
+
+      qsa('.result-star').forEach(starBtn => {
+        starBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(starBtn.dataset.index);
+          toggleSaveCombination(scheduleCombinations[index].courses, starBtn);
         });
       });
     } else if (generatorResults.style.display === 'block') {
@@ -139,6 +159,10 @@ window.App = window.App || {};
 
     clearGeneratorResults();
     renderGeneratorUI();
+  }
+
+  function toggleSaveCombination(combination, starBtn) {
+    App.savedSchedules.toggleSaveCombination(combination, starBtn);
   }
 
   function clearGeneratorResults() {
@@ -244,6 +268,63 @@ window.App = window.App || {};
     return false;
   }
 
+  // Recorre TODOS los cursos agregados (sin importar si están
+  // seleccionados en el generador o visibles en la grilla) y detecta
+  // pares donde, sin importar qué grupo/lab elijas de cada uno, SIEMPRE
+  // hay cruce de horario. Se recalcula cada vez que se renderiza el
+  // generador, para que quede siempre al día.
+  function computeIncompatiblePairs() {
+    const { courses } = App.state;
+    const pairs = [];
+
+    for (let i = 0; i < courses.length; i++) {
+      for (let j = i + 1; j < courses.length; j++) {
+        const courseA = courses[i];
+        const courseB = courses[j];
+        const optionsA = generateCourseOptions(courseA);
+        const optionsB = generateCourseOptions(courseB);
+
+        // Curso con inconsistencia de labs (sin opciones válidas): no
+        // se puede evaluar, se omite de este diagnóstico.
+        if (optionsA.length === 0 || optionsB.length === 0) continue;
+
+        let allConflict = true;
+        for (const optA of optionsA) {
+          for (const optB of optionsB) {
+            if (!checkCombinationConflict([optA, optB])) {
+              allConflict = false;
+              break;
+            }
+          }
+          if (!allConflict) break;
+        }
+
+        if (allConflict) {
+          pairs.push({ nameA: courseA.name, nameB: courseB.name });
+        }
+      }
+    }
+
+    return pairs;
+  }
+
+  function renderIncompatiblePairs() {
+    const pairs = computeIncompatiblePairs();
+
+    incompatibleCount.textContent = pairs.length;
+    incompatibleChip.classList.toggle('has-conflicts', pairs.length > 0);
+
+    if (pairs.length > 0) {
+      incompatibleList.innerHTML = pairs
+        .map(p => `<li>${escapeHTML(p.nameA)} ↔ ${escapeHTML(p.nameB)}</li>`)
+        .join('');
+      incompatibleList.style.display = 'block';
+    } else {
+      incompatibleList.innerHTML = '';
+      incompatibleList.style.display = 'none';
+    }
+  }
+
   function findScheduleCombinations() {
     clearGeneratorResults();
 
@@ -297,12 +378,11 @@ window.App = window.App || {};
     renderGeneratorUI();
   }
 
-  function applyScheduleCombination(index) {
-    if (index < 0 || index >= scheduleCombinations.length) return;
-
-    selectedCombinationIndex = index;
-    const combination = scheduleCombinations[index].courses;
-
+  // Aplica una combinación (array de {courseId, theoryGroup, labGroup})
+  // como la visibilidad activa: oculta todo lo demás y muestra solo
+  // esto. La usan tanto "aplicar un resultado del generador" como
+  // "aplicar un horario guardado" — misma lógica, un solo lugar.
+  function applyCombination(combination) {
     App.state.hideAllGroupsState();
 
     combination.forEach(option => {
@@ -324,6 +404,13 @@ window.App = window.App || {};
     renderGeneratorUI();
   }
 
+  function applyScheduleCombination(index) {
+    if (index < 0 || index >= scheduleCombinations.length) return;
+
+    selectedCombinationIndex = index;
+    applyCombination(scheduleCombinations[index].courses);
+  }
+
   function resetScheduleView() {
     selectedCombinationIndex = -1;
     clearGeneratorResults();
@@ -335,5 +422,5 @@ window.App = window.App || {};
     renderGeneratorUI();
   }
 
-  App.generator = { initScheduleGenerator, renderGeneratorUI };
+  App.generator = { initScheduleGenerator, renderGeneratorUI, applyCombination };
 })(window.App);

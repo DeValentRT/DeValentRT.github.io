@@ -10,6 +10,7 @@ window.App = window.App || {};
     App.sidebar.renderSidebar();
     App.scheduleRender.renderCourses();
     App.generator.initScheduleGenerator();
+    App.savedSchedules.renderSavedSchedules();
   }
 
   document.addEventListener('DOMContentLoaded', init);

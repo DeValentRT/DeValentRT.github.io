@@ -8,6 +8,9 @@ window.App = window.App || {};
 
   let courses = JSON.parse(localStorage.getItem('courses')) || [];
   let visibilityState = JSON.parse(localStorage.getItem('visibilityState')) || {};
+  let savedSchedules = JSON.parse(localStorage.getItem('savedSchedules')) || [];
+
+  const MAX_SAVED_SCHEDULES = 5;
 
   function setCourses(newCourses) {
     courses = newCourses;
@@ -68,12 +71,55 @@ window.App = window.App || {};
     });
   }
 
+  // --- Horarios guardados (máximo 5) ---
+  // Una combinación es un array de {courseId, theoryGroup, labGroup},
+  // el mismo formato que produce el generador de horarios.
+
+  function saveSavedSchedules() {
+    localStorage.setItem('savedSchedules', JSON.stringify(savedSchedules));
+  }
+
+  function combinationKey(option) {
+    return `${option.courseId}|${option.theoryGroup}|${option.labGroup || ''}`;
+  }
+
+  function combinationsEqual(a, b) {
+    if (a.length !== b.length) return false;
+    const setA = new Set(a.map(combinationKey));
+    const setB = new Set(b.map(combinationKey));
+    if (setA.size !== setB.size) return false;
+    for (const key of setA) {
+      if (!setB.has(key)) return false;
+    }
+    return true;
+  }
+
+  function findSavedScheduleIndex(combination) {
+    return savedSchedules.findIndex(saved => combinationsEqual(saved.combination, combination));
+  }
+
+  function addSavedSchedule(combination) {
+    if (savedSchedules.length >= MAX_SAVED_SCHEDULES) {
+      return { ok: false, reason: 'full' };
+    }
+    savedSchedules.push({ id: App.utils.generateId(), combination });
+    saveSavedSchedules();
+    return { ok: true };
+  }
+
+  function removeSavedSchedule(id) {
+    savedSchedules = savedSchedules.filter(saved => saved.id !== id);
+    App.state.savedSchedules = savedSchedules;
+    saveSavedSchedules();
+  }
+
   // App.state.courses es la referencia "viva": como es un array, otros
   // módulos pueden hacer push/filter sobre App.state.courses directamente,
   // y para reemplazar el array completo deben llamar a App.state.setCourses().
   App.state = {
     courses,
     visibilityState,
+    savedSchedules,
     setCourses,
     saveCourses,
     saveVisibilityState,
@@ -81,6 +127,10 @@ window.App = window.App || {};
     setGroupVisibility,
     removeVisibilityForCourse,
     showAllGroupsState,
-    hideAllGroupsState
+    hideAllGroupsState,
+    MAX_SAVED_SCHEDULES,
+    findSavedScheduleIndex,
+    addSavedSchedule,
+    removeSavedSchedule
   };
 })(window.App);
